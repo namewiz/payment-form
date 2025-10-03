@@ -1,5 +1,6 @@
 import './style.css'
 import { PaymentForm } from './payment-form.js'
+import { countries } from './countries.js'
 
 document.querySelector('#app').innerHTML = `
   <div class="payment-form-container">
@@ -99,37 +100,7 @@ document.querySelector('#app').innerHTML = `
           <span class="error-message" id="address-line1-error">Please enter your street address</span>
         </div>
 
-        <div class="form-group">
-          <label for="address-line2">
-            Apartment, suite, etc. (optional)
-          </label>
-          <input
-            type="text"
-            id="address-line2"
-            name="addressLine2"
-            autocomplete="address-line2"
-            placeholder="Apt 4B"
-          />
-        </div>
-
         <div class="form-row">
-          <div class="form-group">
-            <label for="city">
-              City<span class="required">*</span>
-            </label>
-            <input
-              type="text"
-              id="city"
-              name="city"
-              autocomplete="address-level2"
-              placeholder="New York"
-              required
-              aria-required="true"
-              aria-describedby="city-error"
-            />
-            <span class="error-message" id="city-error">Please enter your city</span>
-          </div>
-
           <div class="form-group">
             <label for="state">
               State/Province
@@ -174,27 +145,6 @@ document.querySelector('#app').innerHTML = `
               aria-required="true"
               aria-describedby="country-error"
             >
-              <option value="">Select Country</option>
-              <option value="US">United States</option>
-              <option value="CA">Canada</option>
-              <option value="GB">United Kingdom</option>
-              <option value="AU">Australia</option>
-              <option value="DE">Germany</option>
-              <option value="FR">France</option>
-              <option value="ES">Spain</option>
-              <option value="IT">Italy</option>
-              <option value="JP">Japan</option>
-              <option value="CN">China</option>
-              <option value="IN">India</option>
-              <option value="BR">Brazil</option>
-              <option value="MX">Mexico</option>
-              <option value="NL">Netherlands</option>
-              <option value="SE">Sweden</option>
-              <option value="NO">Norway</option>
-              <option value="DK">Denmark</option>
-              <option value="FI">Finland</option>
-              <option value="PL">Poland</option>
-              <option value="IE">Ireland</option>
             </select>
             <span class="error-message" id="country-error">Please select your country</span>
           </div>
@@ -292,34 +242,7 @@ document.querySelector('#app').innerHTML = `
             <span class="error-message" id="billing-address-line1-error">Please enter billing address</span>
           </div>
 
-          <div class="form-group">
-            <label for="billing-address-line2">
-              Apartment, suite, etc. (optional)
-            </label>
-            <input
-              type="text"
-              id="billing-address-line2"
-              name="billingAddressLine2"
-              autocomplete="billing address-line2"
-              placeholder="Apt 4B"
-            />
-          </div>
-
           <div class="form-row">
-            <div class="form-group">
-              <label for="billing-city">
-                City<span class="required">*</span>
-              </label>
-              <input
-                type="text"
-                id="billing-city"
-                name="billingCity"
-                autocomplete="billing address-level2"
-                placeholder="New York"
-              />
-              <span class="error-message" id="billing-city-error">Please enter billing city</span>
-            </div>
-
             <div class="form-group">
               <label for="billing-state">
                 State/Province
@@ -334,54 +257,31 @@ document.querySelector('#app').innerHTML = `
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="billing-zip">
-                ZIP/Postal Code<span class="required">*</span>
-              </label>
-              <input
-                type="text"
-                id="billing-zip"
-                name="billingZip"
-                autocomplete="billing postal-code"
-                placeholder="10001"
-              />
-              <span class="error-message" id="billing-zip-error">Please enter billing ZIP code</span>
-            </div>
+          <div class="form-group">
+            <label for="billing-zip">
+              ZIP/Postal Code<span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="billing-zip"
+              name="billingZip"
+              autocomplete="billing postal-code"
+              placeholder="10001"
+            />
+            <span class="error-message" id="billing-zip-error">Please enter billing ZIP code</span>
+          </div>
 
-            <div class="form-group">
-              <label for="billing-country">
-                Country<span class="required">*</span>
-              </label>
-              <select
-                id="billing-country"
-                name="billingCountry"
-                autocomplete="billing country"
-              >
-                <option value="">Select Country</option>
-                <option value="US">United States</option>
-                <option value="CA">Canada</option>
-                <option value="GB">United Kingdom</option>
-                <option value="AU">Australia</option>
-                <option value="DE">Germany</option>
-                <option value="FR">France</option>
-                <option value="ES">Spain</option>
-                <option value="IT">Italy</option>
-                <option value="JP">Japan</option>
-                <option value="CN">China</option>
-                <option value="IN">India</option>
-                <option value="BR">Brazil</option>
-                <option value="MX">Mexico</option>
-                <option value="NL">Netherlands</option>
-                <option value="SE">Sweden</option>
-                <option value="NO">Norway</option>
-                <option value="DK">Denmark</option>
-                <option value="FI">Finland</option>
-                <option value="PL">Poland</option>
-                <option value="IE">Ireland</option>
-              </select>
-              <span class="error-message" id="billing-country-error">Please select billing country</span>
-            </div>
+          <div class="form-group">
+            <label for="billing-country">
+              Country<span class="required">*</span>
+            </label>
+            <select
+              id="billing-country"
+              name="billingCountry"
+              autocomplete="billing country"
+            >
+            </select>
+            <span class="error-message" id="billing-country-error">Please select billing country</span>
           </div>
         </div>
 
@@ -451,5 +351,14 @@ document.querySelector('#app').innerHTML = `
     </form>
   </div>
 `
+
+const countrySelect = document.getElementById('country')
+const billingCountrySelect = document.getElementById('billing-country')
+
+const countryOptions = '<option value="">Select Country</option>' +
+  countries.map(c => `<option value="${c.code}">${c.name}</option>`).join('')
+
+countrySelect.innerHTML = countryOptions
+billingCountrySelect.innerHTML = countryOptions
 
 new PaymentForm()

@@ -89,7 +89,7 @@ export class PaymentForm {
   setBillingFieldsRequired(required) {
     const billingFields = [
       'billing-address-line1',
-      'billing-city',
+      'billing-state',
       'billing-zip',
       'billing-country'
     ]
@@ -109,7 +109,7 @@ export class PaymentForm {
   clearBillingErrors() {
     const billingFields = [
       'billing-address-line1',
-      'billing-city',
+      'billing-state',
       'billing-zip',
       'billing-country'
     ]
@@ -214,7 +214,7 @@ export class PaymentForm {
         'email',
         'phone',
         'address-line1',
-        'city',
+        'state',
         'zip',
         'country'
       ]
@@ -228,7 +228,7 @@ export class PaymentForm {
       if (document.getElementById('separate-billing').checked) {
         fields.push(
           'billing-address-line1',
-          'billing-city',
+          'billing-state',
           'billing-zip',
           'billing-country'
         )
@@ -247,8 +247,6 @@ export class PaymentForm {
         phone: document.getElementById('phone').value.trim(),
         address: {
           line1: document.getElementById('address-line1').value.trim(),
-          line2: document.getElementById('address-line2').value.trim(),
-          city: document.getElementById('city').value.trim(),
           state: document.getElementById('state').value.trim(),
           zip: document.getElementById('zip').value.trim(),
           country: document.getElementById('country').value
@@ -266,8 +264,6 @@ export class PaymentForm {
     if (separateBilling) {
       this.formData.paymentInfo.billingAddress = {
         line1: document.getElementById('billing-address-line1').value.trim(),
-        line2: document.getElementById('billing-address-line2').value.trim(),
-        city: document.getElementById('billing-city').value.trim(),
         state: document.getElementById('billing-state').value.trim(),
         zip: document.getElementById('billing-zip').value.trim(),
         country: document.getElementById('billing-country').value
@@ -289,8 +285,7 @@ export class PaymentForm {
     const addr = this.formData.userInfo.address
     const addressText = [
       addr.line1,
-      addr.line2,
-      `${addr.city}${addr.state ? ', ' + addr.state : ''} ${addr.zip}`,
+      `${addr.state} ${addr.zip}`,
       addr.country
     ].filter(Boolean).join(', ')
     document.getElementById('summary-address').textContent = addressText
@@ -302,8 +297,7 @@ export class PaymentForm {
       const billAddr = this.formData.paymentInfo.billingAddress
       const billingText = [
         billAddr.line1,
-        billAddr.line2,
-        `${billAddr.city}${billAddr.state ? ', ' + billAddr.state : ''} ${billAddr.zip}`,
+        `${billAddr.state} ${billAddr.zip}`,
         billAddr.country
       ].filter(Boolean).join(', ')
       document.getElementById('summary-billing').textContent = billingText
