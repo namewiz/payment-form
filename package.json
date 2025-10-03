@@ -1,14 +1,34 @@
 {
   "name": "payment-form",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build --config vite.prod.config.js",
+    "build:dev": "vite build --outDir docs",
+    "preview": "vite preview --outDir docs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:run": "vitest run"
   },
+  "type": "module",
+  "homepage": "https://namewiz.github.io/payment-form",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/namewiz/payment-form.git"
+  },
+  "bugs": {
+    "url": "https://github.com/namewiz/payment-form/issues"
+  },
+  "author": "Justice Ogbonna <dev@justiceo.com>",
+  "keywords": [
+    "domain-registration",
+    "domain-payment",
+    "standalone-payment-component"
+  ],
+  "license": "MIT",
   "devDependencies": {
-    "vite": "^7.1.9"
+    "jsdom": "^25.0.1",
+    "vite": "^7.1.9",
+    "vitest": "^3.2.4"
   }
 }
