@@ -1,0 +1,346 @@
+
+  <div class="payment-form-container">
+    <div class="form-header">
+      <h1>Domain Payment</h1>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <span id="theme-icon">🌙</span>
+      </button>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-step active" data-step="1">
+        <div class="progress-circle">1</div>
+        <span class="progress-label">Your Info</span>
+      </div>
+      <div class="progress-step" data-step="2">
+        <div class="progress-circle">2</div>
+        <span class="progress-label">Payment</span>
+      </div>
+      <div class="progress-step" data-step="3">
+        <div class="progress-circle">3</div>
+        <span class="progress-label">Confirm</span>
+      </div>
+    </div>
+
+    <form id="payment-form" class="form-body" novalidate>
+      <!-- Step 1: User Information -->
+      <div class="form-step active" data-step="1">
+        <div class="form-group">
+          <label for="full-name">
+            Full Name<span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="full-name"
+            name="fullName"
+            autocomplete="name"
+            placeholder="John Doe"
+            required
+            aria-required="true"
+            aria-describedby="full-name-error"
+          />
+          <span class="error-message" id="full-name-error">Please enter your full name</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">
+              Email<span class="required">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              placeholder="john@example.com"
+              required
+              aria-required="true"
+              aria-describedby="email-error"
+            />
+            <span class="error-message" id="email-error">Please enter a valid email</span>
+          </div>
+
+          <div class="form-group">
+            <label for="phone">
+              Phone Number<span class="required">*</span>
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              autocomplete="tel"
+              placeholder="+1 (555) 123-4567"
+              required
+              aria-required="true"
+              aria-describedby="phone-error"
+            />
+            <span class="error-message" id="phone-error">Please enter a valid phone number</span>
+            <span class="hint">International format (e.g., +1 555 123 4567)</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address-line1">
+            Street Address<span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="address-line1"
+            name="addressLine1"
+            autocomplete="address-line1"
+            placeholder="123 Main Street"
+            required
+            aria-required="true"
+            aria-describedby="address-line1-error"
+          />
+          <span class="error-message" id="address-line1-error">Please enter your street address</span>
+        </div>
+
+        <div class="form-row form-row-3">
+          <div class="form-group">
+            <label for="state">
+              State
+            </label>
+            <input
+              type="text"
+              id="state"
+              name="state"
+              autocomplete="address-level1"
+              placeholder="NY"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="country">
+              Country<span class="required">*</span>
+            </label>
+            <select
+              id="country"
+              name="country"
+              autocomplete="country"
+              required
+              aria-required="true"
+              aria-describedby="country-error"
+            >
+            </select>
+            <span class="error-message" id="country-error">Please select your country</span>
+          </div>
+
+          <div class="form-group">
+            <label for="zip">
+              Zip<span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="zip"
+              name="zip"
+              autocomplete="postal-code"
+              placeholder="10001"
+              required
+              aria-required="true"
+              aria-describedby="zip-error"
+            />
+            <span class="error-message" id="zip-error">Please enter your ZIP/postal code</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-primary" id="next-step-1">
+            Continue to Payment
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Payment Information -->
+      <div class="form-step" data-step="2">
+        <div class="form-group">
+          <label for="card-number">
+            Card Number<span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="card-number"
+            name="cardNumber"
+            autocomplete="cc-number"
+            placeholder="1234 5678 9012 3456"
+            maxlength="19"
+            required
+            aria-required="true"
+            aria-describedby="card-number-error"
+            inputmode="numeric"
+          />
+          <span class="error-message" id="card-number-error">Please enter a valid card number</span>
+        </div>
+
+        <div class="card-input-group">
+          <div class="form-group">
+            <label for="expiry-date">
+              Expiry Date<span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="expiry-date"
+              name="expiryDate"
+              autocomplete="cc-exp"
+              placeholder="MM/YY"
+              maxlength="5"
+              required
+              aria-required="true"
+              aria-describedby="expiry-date-error"
+              inputmode="numeric"
+            />
+            <span class="error-message" id="expiry-date-error">Please enter expiry date</span>
+          </div>
+
+          <div class="form-group">
+            <label for="cvc">
+              CVC<span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="cvc"
+              name="cvc"
+              autocomplete="cc-csc"
+              placeholder="123"
+              maxlength="4"
+              required
+              aria-required="true"
+              aria-describedby="cvc-error"
+              inputmode="numeric"
+            />
+            <span class="error-message" id="cvc-error">Please enter CVC</span>
+          </div>
+        </div>
+
+        <div class="checkbox-group">
+          <input
+            type="checkbox"
+            id="separate-billing"
+            name="separateBilling"
+          />
+          <label for="separate-billing">Use a different billing address</label>
+        </div>
+
+        <div id="billing-address-fields">
+          <div class="form-group">
+            <label for="billing-address-line1">
+              Billing Street Address<span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="billing-address-line1"
+              name="billingAddressLine1"
+              autocomplete="billing address-line1"
+              placeholder="123 Billing Street"
+            />
+            <span class="error-message" id="billing-address-line1-error">Please enter billing address</span>
+          </div>
+
+          <div class="form-row form-row-3">
+            <div class="form-group">
+              <label for="billing-state">
+                State
+              </label>
+              <input
+                type="text"
+                id="billing-state"
+                name="billingState"
+                autocomplete="billing address-level1"
+                placeholder="NY"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="billing-country">
+                Country<span class="required">*</span>
+              </label>
+              <select
+                id="billing-country"
+                name="billingCountry"
+                autocomplete="billing country"
+              >
+              </select>
+              <span class="error-message" id="billing-country-error">Please select billing country</span>
+            </div>
+
+            <div class="form-group">
+              <label for="billing-zip">
+                Zip<span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="billing-zip"
+                name="billingZip"
+                autocomplete="billing postal-code"
+                placeholder="10001"
+              />
+              <span class="error-message" id="billing-zip-error">Please enter billing ZIP code</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="prev-step-2">
+            Back
+          </button>
+          <button type="button" class="btn-primary" id="next-step-2">
+            Review Order
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Confirmation -->
+      <div class="form-step" data-step="3">
+        <div class="confirmation-content">
+          <h2>Review Your Information</h2>
+          <p>Please review your details before submitting</p>
+
+          <div class="summary-section">
+            <h3>Contact Information</h3>
+            <div class="summary-item">
+              <span class="summary-label">Name:</span>
+              <span class="summary-value" id="summary-name"></span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Email:</span>
+              <span class="summary-value" id="summary-email"></span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Phone:</span>
+              <span class="summary-value" id="summary-phone"></span>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <h3>Shipping Address</h3>
+            <div class="summary-item">
+              <span class="summary-label">Address:</span>
+              <span class="summary-value" id="summary-address"></span>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <h3>Payment Information</h3>
+            <div class="summary-item">
+              <span class="summary-label">Card:</span>
+              <span class="summary-value" id="summary-card"></span>
+            </div>
+            <div class="summary-item" id="summary-billing-section" style="display: none;">
+              <span class="summary-label">Billing Address:</span>
+              <span class="summary-value" id="summary-billing"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="prev-step-3">
+            Back
+          </button>
+          <button type="submit" class="btn-primary" id="submit-form">
+            <span id="submit-text">Complete Payment</span>
+            <span class="loading-spinner"></span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>

@@ -196,8 +196,16 @@ body {
   gap: 1rem;
 }
 
+.form-row-3 {
+  display: grid;
+  /* Make third column (Zip) narrower */
+  grid-template-columns: 1fr 1fr minmax(9ch, 12ch);
+  gap: 1rem;
+}
+
 @media (max-width: 640px) {
-  .form-row {
+  .form-row,
+  .form-row-3 {
     grid-template-columns: 1fr;
   }
 }

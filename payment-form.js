@@ -283,10 +283,12 @@ export class PaymentForm {
     document.getElementById('summary-phone').textContent = this.formData.userInfo.phone
 
     const addr = this.formData.userInfo.address
+    const stateCountryZip = [addr.state, addr.country, addr.zip]
+      .filter(Boolean)
+      .join(', ')
     const addressText = [
       addr.line1,
-      `${addr.state} ${addr.zip}`,
-      addr.country
+      stateCountryZip
     ].filter(Boolean).join(', ')
     document.getElementById('summary-address').textContent = addressText
 
@@ -295,10 +297,12 @@ export class PaymentForm {
 
     if (this.formData.paymentInfo.separateBillingAddress) {
       const billAddr = this.formData.paymentInfo.billingAddress
+      const billStateCountryZip = [billAddr.state, billAddr.country, billAddr.zip]
+        .filter(Boolean)
+        .join(', ')
       const billingText = [
         billAddr.line1,
-        `${billAddr.state} ${billAddr.zip}`,
-        billAddr.country
+        billStateCountryZip
       ].filter(Boolean).join(', ')
       document.getElementById('summary-billing').textContent = billingText
       document.getElementById('summary-billing-section').style.display = 'flex'
