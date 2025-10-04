@@ -1,7 +1,7 @@
 import './style.css'
 import { PaymentForm } from './payment-form.js'
 import { countries } from './countries.js'
-import formTemplate from './payment-form.html?raw'
+import formTemplate from './payment-form.html'
 
 document.querySelector('#app').innerHTML = formTemplate
 

@@ -1,7 +1,7 @@
 /* @vitest-environment jsdom */
 
 import { describe, it, expect, beforeEach } from 'vitest'
-import { PaymentForm } from '../payment-form.js'
+import { PaymentForm } from '../src/payment-form.js'
 
 function setupDOM() {
   document.body.innerHTML = `
