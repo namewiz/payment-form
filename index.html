@@ -6,6 +6,25 @@
   <link rel="icon" href="data:," />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Domain Payment Form</title>
+  <!-- Tailwind CSS for quick styling -->
+  <!-- Override the small breakpoint to 500px -->
+  <script>
+    // Tailwind CDN config must be defined before the CDN script
+    window.tailwind = window.tailwind || {}
+    window.tailwind.config = {
+      theme: {
+        // Override 'sm' from 640px to 500px
+        screens: {
+          sm: '500px',
+          md: '768px',
+          lg: '1024px',
+          xl: '1280px',
+          '2xl': '1536px',
+        },
+      },
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -16,7 +35,8 @@
       background-color: var(--bg-secondary);
       color: var(--text-primary);
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: flex-start;
       align-items: center;
       padding: 1rem;
     }
@@ -26,8 +46,137 @@
       max-width: 700px;
     }
   </style>
+
+  <!-- Configuration form -->
+  <div
+    class="w-full max-w-2xl mb-6 bg-white/60 dark:bg-white/10 backdrop-blur rounded-lg border border-gray-200/80 dark:border-white/10 p-5 shadow-sm">
+    <h2 class="text-xl font-semibold mb-4">Configure Payment Form</h2>
+    <form id="config-form" class="space-y-4">
+      <div>
+        <label for="cfg-domain" class="block text-sm font-medium mb-1">Domain Name</label>
+        <input id="cfg-domain" name="domain" type="text" placeholder=""
+          class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="cfg-currency" class="block text-sm font-medium mb-1">Currency</label>
+          <select id="cfg-currency" name="currency"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="USD">US Dollar (USD)</option>
+            <option value="EUR">Euro (EUR)</option>
+            <option value="NGN">Naira (NGN)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="cfg-theme" class="block text-sm font-medium mb-1">Theme</label>
+          <select id="cfg-theme" name="theme"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="system-default" selected>System default (default)</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="cfg-customer" class="block text-sm font-medium mb-1">Customer Info (JSON)</label>
+        <textarea id="cfg-customer" name="customer" rows="4"
+          placeholder='{"name":"John Doe","email":"john@example.com","phone":"+1 555 123 4567"}'
+          class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        <p id="cfg-customer-error" class="hidden mt-1 text-sm text-red-600">Invalid JSON. Please provide a valid object
+          with name, email, phone.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button type="submit"
+          class="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Apply Configuration
+        </button>
+        <button type="button" id="cfg-reset"
+          class="inline-flex items-center gap-2 rounded-md bg-gray-100 px-4 py-2 text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400">
+          Reset
+        </button>
+      </div>
+    </form>
+  </div>
   <payment-form></payment-form>
   <script type="module" src="./dist/main.js"></script>
+  <script>
+      (function () {
+        function currentThemeFromSystem() {
+          return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        }
+
+        function applyConfig(e) {
+          e && e.preventDefault()
+          const form = document.getElementById('config-form')
+          const domain = (form.domain.value || '').trim()
+          const currency = (form.currency.value || 'USD').toUpperCase()
+          const themeSel = form.theme.value || 'system-default'
+
+          // Theme handling: set localStorage theme used by component
+          if (themeSel === 'light' || themeSel === 'dark') {
+            localStorage.setItem('theme', themeSel)
+          } else {
+            // system-default
+            localStorage.setItem('theme', currentThemeFromSystem())
+          }
+
+          // Parse customer JSON
+          let customer = {}
+          const err = document.getElementById('cfg-customer-error')
+          err.classList.add('hidden')
+          const customerRaw = form.customer.value.trim()
+          if (customerRaw) {
+            try {
+              const parsed = JSON.parse(customerRaw)
+              if (parsed && typeof parsed === 'object') {
+                customer = parsed
+              }
+            } catch (ex) {
+              err.classList.remove('hidden')
+              return
+            }
+          }
+
+          // Build a new payment-form element with attributes
+          const existing = document.querySelector('payment-form')
+          const replacement = document.createElement('payment-form')
+          replacement.setAttribute('domain', domain)
+          replacement.setAttribute('currency', currency)
+          if (customer.name) replacement.setAttribute('name', customer.name)
+          if (customer.email) replacement.setAttribute('email', customer.email)
+          if (customer.phone) replacement.setAttribute('phone', customer.phone)
+
+          // Replace the node so it initializes with new options
+          if (existing && existing.parentNode) {
+            existing.parentNode.replaceChild(replacement, existing)
+          } else if (!existing) {
+            document.body.appendChild(replacement)
+          }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+          // Prefill form defaults
+          const form = document.getElementById('config-form')
+          form.domain.value = ''
+          form.currency.value = 'USD'
+          form.theme.value = 'system-default'
+
+          // Wire actions
+          form.addEventListener('submit', applyConfig)
+          document.getElementById('cfg-reset').addEventListener('click', function () {
+            form.reset()
+            form.domain.value = ''
+            form.currency.value = ''
+            form.theme.value = 'system-default'
+            document.getElementById('cfg-customer-error').classList.add('hidden')
+          })
+        })
+      })()
+  </script>
 </body>
 
 </html>

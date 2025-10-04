@@ -1,13 +1,13 @@
-import styles from './style.css'
-import { PaymentForm } from './payment-form.js'
 import { countries } from './countries.js'
 import formTemplate from './payment-form.html'
+import { PaymentForm } from './payment-form.js'
+import styles from './style.css'
 
 const TEMPLATE = document.createElement('template')
 TEMPLATE.innerHTML = formTemplate
 
 export class PaymentFormElement extends HTMLElement {
-  constructor() {
+  constructor () {
     super()
     this.paymentForm = null
     this.isInitialized = false
@@ -27,6 +27,18 @@ export class PaymentFormElement extends HTMLElement {
     // Clear shadow root and render template + styles
     this.shadow.innerHTML = ''
 
+    // Initialize PaymentForm with the shadow root as context
+    const options = this.readOptionsFromAttributes()
+
+    const hasDomain = typeof options.domain === 'string' && options.domain.trim().length > 0
+    const hasCurrency = typeof options.currency === 'string' && options.currency.trim().length > 0
+
+    if (!hasDomain || !hasCurrency) {
+      // eslint-disable-next-line no-console
+      console.warn('[PaymentFormElement] Missing required attributes: domain and currency. Not initializing form.')
+      return
+    }
+
     const styleEl = document.createElement('style')
     styleEl.textContent = styles
 
@@ -35,8 +47,6 @@ export class PaymentFormElement extends HTMLElement {
     this.shadow.appendChild(content)
 
     this.populateCountries()
-    // Initialize PaymentForm with the shadow root as context
-    const options = this.readOptionsFromAttributes()
     this.paymentForm = new PaymentForm(this.shadow, options)
   }
 
@@ -45,8 +55,11 @@ export class PaymentFormElement extends HTMLElement {
     const dataAttr = (name) => this.getAttribute(`data-${name}`)
 
     // Support both data-* and plain attributes
-    const domain = dataAttr('domain') || attr('domain') || undefined
-    const currency = (dataAttr('currency') || attr('currency') || 'USD')
+    const domainRaw = dataAttr('domain') || attr('domain') || undefined
+    const currencyRaw = dataAttr('currency') || attr('currency') || undefined
+
+    const domain = typeof domainRaw === 'string' ? domainRaw.trim() : undefined
+    const currency = typeof currencyRaw === 'string' ? currencyRaw.trim().toUpperCase() : undefined
 
     const customer = {
       name: dataAttr('name') || attr('name') || undefined,

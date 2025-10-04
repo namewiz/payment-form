@@ -4,14 +4,19 @@ export class PaymentForm {
     this.currentStep = 1
     this.formData = {}
     this.config = {
-      // TODO: domain, currency are required, do not render form without them.
-      domain: options.domain || 'example.ng',
-      currency: (options.currency || 'USD').toUpperCase(),
+      // domain, currency are required, do not render form without them.
+      domain: (typeof options.domain === 'string' && options.domain.trim()) ? options.domain.trim() : undefined,
+      currency: (typeof options.currency === 'string' && options.currency.trim()) ? options.currency.toUpperCase().trim() : undefined,
       basePrice: typeof options.basePrice === 'number' ? options.basePrice : 12.0,
       taxesRate: typeof options.taxesRate === 'number' ? options.taxesRate : 0.075,
       feeAmount: typeof options.feeAmount === 'number' ? options.feeAmount : 1.5,
       customer: options.customer || {}
     }
+    // If required config is missing, do not render the form UI
+    if (!this.config.domain || !this.config.currency) {
+      throw new Error('PaymentForm: domain and currency are required configuration options')
+    }
+
     this.currencySymbol = this.getCurrencySymbol(this.config.currency)
     this.skipCustomerStep = false
 

@@ -190,7 +190,7 @@
   gap: 1rem;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 500px) {
   .form-row,
   .form-row-3 {
     grid-template-columns: 1fr;
