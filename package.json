@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "esbuild src/main.js --bundle --outdir=dist --format=esm --sourcemap --loader:.html=text --watch --servedir=.",
     "build": "esbuild src/main.js --bundle --outdir=dist --format=esm --minify --loader:.html=text",
-    "preview": "npx serve dist",
+    "preview": "npx serve .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:run": "vitest run"
