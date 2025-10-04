@@ -103,7 +103,7 @@
   </div>
   <payment-form></payment-form>
   <script type="module" src="./dist/main.js"></script>
-  <script>
+  <script defer>
       (function () {
         function currentThemeFromSystem() {
           return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -112,17 +112,9 @@
         function applyConfig(e) {
           e && e.preventDefault()
           const form = document.getElementById('config-form')
-          const domain = (form.domain.value || '').trim()
+          const domain = (form.domain.value || '').trim() || "test.io"
           const currency = (form.currency.value || 'USD').toUpperCase()
           const themeSel = form.theme.value || 'system-default'
-
-          // Theme handling: set localStorage theme used by component
-          if (themeSel === 'light' || themeSel === 'dark') {
-            localStorage.setItem('theme', themeSel)
-          } else {
-            // system-default
-            localStorage.setItem('theme', currentThemeFromSystem())
-          }
 
           // Parse customer JSON
           let customer = {}
@@ -149,6 +141,8 @@
           if (customer.name) replacement.setAttribute('name', customer.name)
           if (customer.email) replacement.setAttribute('email', customer.email)
           if (customer.phone) replacement.setAttribute('phone', customer.phone)
+          // Apply theme via config attribute; component controls theme internally
+          replacement.setAttribute('theme', themeSel)
 
           // Replace the node so it initializes with new options
           if (existing && existing.parentNode) {
@@ -161,7 +155,7 @@
         document.addEventListener('DOMContentLoaded', function () {
           // Prefill form defaults
           const form = document.getElementById('config-form')
-          form.domain.value = ''
+          form.domain.value = 'prefilled.com'
           form.currency.value = 'USD'
           form.theme.value = 'system-default'
 
@@ -169,8 +163,8 @@
           form.addEventListener('submit', applyConfig)
           document.getElementById('cfg-reset').addEventListener('click', function () {
             form.reset()
-            form.domain.value = ''
-            form.currency.value = ''
+            form.domain.value = 'reset.com'
+            form.currency.value = 'USD'
             form.theme.value = 'system-default'
             document.getElementById('cfg-customer-error').classList.add('hidden')
           })

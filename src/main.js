@@ -57,6 +57,7 @@ export class PaymentFormElement extends HTMLElement {
     // Support both data-* and plain attributes
     const domainRaw = dataAttr('domain') || attr('domain') || undefined
     const currencyRaw = dataAttr('currency') || attr('currency') || undefined
+    const themeRaw = dataAttr('theme') || attr('theme') || undefined
 
     const domain = typeof domainRaw === 'string' ? domainRaw.trim() : undefined
     const currency = typeof currencyRaw === 'string' ? currencyRaw.trim().toUpperCase() : undefined
@@ -71,7 +72,14 @@ export class PaymentFormElement extends HTMLElement {
     const taxesRate = attr('taxes-rate') ? Number(attr('taxes-rate')) : undefined
     const feeAmount = attr('fee-amount') ? Number(attr('fee-amount')) : undefined
 
-    return { domain, currency, customer, basePrice, taxesRate, feeAmount }
+    let theme
+    if (typeof themeRaw === 'string') {
+      const t = themeRaw.trim().toLowerCase()
+      if (t === 'light' || t === 'dark') theme = t
+      else if (t === 'system' || t === 'system-default') theme = 'system'
+    }
+
+    return { domain, currency, customer, basePrice, taxesRate, feeAmount, theme }
   }
 
   populateCountries() {

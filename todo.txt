@@ -3,7 +3,7 @@
 - separate out styles, implement alternates
 - deploy as web-component
 - fix demo page.
-
+- integrate domainprices, to parse domain and get actual prices
 
 - payment form UI
   - parameters: domain name to purchase, currency, customer info (optional: name, email, phone)

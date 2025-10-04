@@ -10,7 +10,13 @@ export class PaymentForm {
       basePrice: typeof options.basePrice === 'number' ? options.basePrice : 12.0,
       taxesRate: typeof options.taxesRate === 'number' ? options.taxesRate : 0.075,
       feeAmount: typeof options.feeAmount === 'number' ? options.feeAmount : 1.5,
-      customer: options.customer || {}
+      customer: options.customer || {},
+      // theme: 'light' | 'dark' | 'system' (default)
+      theme: (() => {
+        const t = typeof options.theme === 'string' ? options.theme.trim().toLowerCase() : undefined
+        if (t === 'light' || t === 'dark') return t
+        return 'system'
+      })()
     }
     // If required config is missing, do not render the form UI
     if (!this.config.domain || !this.config.currency) {
@@ -33,26 +39,25 @@ export class PaymentForm {
   }
 
   initTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light'
     const themeTarget = this.root?.host || document.documentElement
-    themeTarget.setAttribute('data-theme', savedTheme)
-    this.updateThemeIcon(savedTheme)
-  }
-
-  updateThemeIcon(theme) {
-    const icon = this.getElement('#theme-icon')
-    icon.textContent = theme === 'dark' ? '☀️' : '🌙'
+    const systemDefault = (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ? 'dark'
+      : 'light'
+    const desired = (this.config.theme === 'light' || this.config.theme === 'dark')
+      ? this.config.theme
+      : systemDefault
+    themeTarget.setAttribute('data-theme', desired)
   }
 
   initEventListeners() {
-    const themeToggle = this.getElement('#theme-toggle')
-    if (themeToggle) themeToggle.addEventListener('click', () => this.toggleTheme())
-
     const next1 = this.getElement('#next-step-1')
     if (next1) next1.addEventListener('click', () => this.validateAndNextStep(1))
 
     const next2 = this.getElement('#next-step-2')
     if (next2) next2.addEventListener('click', () => this.validateAndNextStep(2))
+
+    const prev1 = this.getElement('#prev-step-1')
+    if (prev1) prev1.addEventListener('click', () => this.goToStep(1))
 
     const prev2 = this.getElement('#prev-step-2')
     if (prev2) prev2.addEventListener('click', () => this.goToStep(2))
@@ -126,15 +131,6 @@ export class PaymentForm {
     if (domainEl) domainEl.textContent = this.config.domain
     if (periodEl) periodEl.textContent = '1 year'
     if (totalEl) totalEl.textContent = fmt(total)
-  }
-
-  toggleTheme() {
-    const themeTarget = this.root?.host || document.documentElement
-    const currentTheme = themeTarget.getAttribute('data-theme')
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light'
-    themeTarget.setAttribute('data-theme', newTheme)
-    localStorage.setItem('theme', newTheme)
-    this.updateThemeIcon(newTheme)
   }
 
   setupCardFormatting() {
