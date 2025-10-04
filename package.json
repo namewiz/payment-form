@@ -1,6 +1,7 @@
 {
   "name": "payment-form",
   "version": "0.0.1",
+  "description": "Standalone payment form UI component for domain registration",
   "scripts": {
     "dev": "esbuild src/main.js --bundle --outdir=dist --format=esm --sourcemap --loader:.html=text --watch --servedir=.",
     "build": "esbuild src/main.js --bundle --outdir=dist --format=esm --minify --loader:.html=text",
@@ -26,8 +27,8 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "esbuild": "^0.25.10",
     "jsdom": "^25.0.1",
-    "esbuild": "^0.24.0",
     "vitest": "^3.2.4"
   }
 }
