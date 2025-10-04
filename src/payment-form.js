@@ -32,6 +32,11 @@ export class PaymentForm {
     // Initialize UI state
     this.prefillCustomerInfo()
     this.computeAndRenderOrderSummary()
+    // Analytics: mark form viewed if gtag is available
+    this.trackEvent && this.trackEvent('payment_form_viewed', {
+      domain: this.config.domain,
+      currency: this.config.currency
+    })
   }
 
   getElement(selector) {
@@ -79,6 +84,21 @@ export class PaymentForm {
     })
 
     this.setupCardFormatting()
+  }
+
+  // ---------- Analytics helpers ----------
+  gtagAvailable() {
+    return (typeof window !== 'undefined' && typeof window.gtag === 'function')
+  }
+
+  trackEvent(eventName, params = {}) {
+    if (!this.gtagAvailable()) return false
+    try {
+      window.gtag('event', eventName, params)
+      return true
+    } catch (e) {
+      return false
+    }
   }
 
   getCurrencySymbol(code) {
@@ -403,6 +423,32 @@ export class PaymentForm {
     this.currentStep = step
 
     window.scrollTo({ top: 0, behavior: 'smooth' })
+
+    // Analytics: step views and key checkout events
+    const stepMap = { 1: 'order_summary', 2: 'customer_info', 3: 'payment_info', 4: 'processing' }
+    this.trackEvent('payment_form_step_viewed', {
+      step,
+      step_name: stepMap[step] || 'unknown',
+      domain: this.config.domain,
+      currency: this.config.currency
+    })
+
+    // When payment step is shown, mark begin_checkout (GA4 recommendation)
+    if (step === 3) {
+      const value = this.orderTotals?.total || 0
+      this.trackEvent('begin_checkout', {
+        value,
+        currency: this.config.currency,
+        items: [
+          {
+            item_id: this.config.domain,
+            item_name: 'Domain Registration',
+            price: value,
+            quantity: 1
+          }
+        ]
+      })
+    }
   }
 
   async handleSubmit(e) {
@@ -420,6 +466,23 @@ export class PaymentForm {
     if (submitText) submitText.textContent = 'Processing...'
 
     this.collectFormData()
+    // Analytics: add_payment_info (GA4 recommendation)
+    const apValue = this.orderTotals?.total || 0
+    const discountCode = this.formData?.order?.discountCode || ''
+    this.trackEvent('add_payment_info', {
+      payment_type: 'card',
+      value: apValue,
+      currency: this.config.currency,
+      coupon: discountCode || undefined,
+      items: [
+        {
+          item_id: this.config.domain,
+          item_name: 'Domain Registration',
+          price: apValue,
+          quantity: 1
+        }
+      ]
+    })
 
     // Move to status step and kick off simulated flow
     this.goToStep(4)
@@ -435,14 +498,21 @@ export class PaymentForm {
     // 1) Fetch reCAPTCHA v3 token (simulate)
     setStatus('Securing session...')
     const recaptchaToken = await new Promise((resolve) => setTimeout(() => resolve('recaptcha_dummy_token'), 1000))
+    this.trackEvent('payment_milestone', { milestone: 'recaptcha_token_obtained' })
 
     // 2) Create payment intent (simulate ~5s)
     setStatus('Creating payment intent...')
     const paymentIntentId = await new Promise((resolve) => setTimeout(() => resolve('pi_simulated_' + Math.random().toString(36).slice(2, 8)), 5000))
+    this.trackEvent('payment_milestone', {
+      milestone: 'payment_intent_created',
+      payment_intent_id: paymentIntentId
+    })
 
     // 3) Charge via Stripe (simulate)
     setStatus('Charging card...')
+    this.trackEvent('payment_milestone', { milestone: 'charge_attempt_started' })
     await new Promise((resolve) => setTimeout(resolve, 1200))
+    this.trackEvent('payment_milestone', { milestone: 'charge_succeeded' })
 
     // 4) Finalize and register domain (~15s) with rolling statuses
     const steps = [
@@ -458,6 +528,9 @@ export class PaymentForm {
       setStatus(s + '...')
       // eslint-disable-next-line no-await-in-loop
       await new Promise((r) => setTimeout(r, perStep))
+      this.trackEvent('payment_milestone', {
+        milestone: s.toLowerCase().replace(/\s+/g, '_')
+      })
     }
 
     // Success summary
@@ -497,17 +570,43 @@ export class PaymentForm {
       const closeBtn = this.getElement('#close-payment-form')
       if (closeBtn) closeBtn.addEventListener('click', () => this.closeForm())
     }
+
+    // Analytics: purchase (GA4 recommendation)
+    const value = this.orderTotals?.total || 0
+    const coupon = this.formData?.order?.discountCode || ''
+    this.trackEvent('purchase', {
+      transaction_id: txnId,
+      value,
+      currency: this.config.currency,
+      coupon: coupon || undefined,
+      items: [
+        {
+          item_id: this.config.domain,
+          item_name: 'Domain Registration',
+          price: value,
+          quantity: 1
+        }
+      ]
+    })
   }
 
   closeForm() {
     // If running within a custom element, remove it. Otherwise hide container.
     const host = this.root.host
     if (host && typeof host.remove === 'function') {
+      this.trackEvent('payment_form_closed', {
+        domain: this.config.domain,
+        currency: this.config.currency
+      })
       host.remove()
       return
     }
     const container = this.getElement('.payment-form-container')
     if (container) {
+      this.trackEvent('payment_form_closed', {
+        domain: this.config.domain,
+        currency: this.config.currency
+      })
       container.style.display = 'none'
     }
   }
