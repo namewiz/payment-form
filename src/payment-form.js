@@ -1,10 +1,15 @@
 export class PaymentForm {
-  constructor() {
+  constructor(rootElement = document) {
+    this.root = rootElement
     this.currentStep = 1
     this.formData = {}
 
     this.initTheme()
     this.initEventListeners()
+  }
+
+  getElement(selector) {
+    return this.root?.querySelector(selector)
   }
 
   initTheme() {
@@ -14,22 +19,22 @@ export class PaymentForm {
   }
 
   updateThemeIcon(theme) {
-    const icon = document.getElementById('theme-icon')
+    const icon = this.getElement('#theme-icon')
     icon.textContent = theme === 'dark' ? '☀️' : '🌙'
   }
 
   initEventListeners() {
-    document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme())
+    this.getElement('#theme-toggle').addEventListener('click', () => this.toggleTheme())
 
-    document.getElementById('next-step-1').addEventListener('click', () => this.validateAndNextStep(1))
-    document.getElementById('next-step-2').addEventListener('click', () => this.validateAndNextStep(2))
-    document.getElementById('prev-step-2').addEventListener('click', () => this.goToStep(1))
-    document.getElementById('prev-step-3').addEventListener('click', () => this.goToStep(2))
+    this.getElement('#next-step-1').addEventListener('click', () => this.validateAndNextStep(1))
+    this.getElement('#next-step-2').addEventListener('click', () => this.validateAndNextStep(2))
+    this.getElement('#prev-step-2').addEventListener('click', () => this.goToStep(1))
+    this.getElement('#prev-step-3').addEventListener('click', () => this.goToStep(2))
 
-    document.getElementById('payment-form').addEventListener('submit', (e) => this.handleSubmit(e))
+    this.getElement('#payment-form').addEventListener('submit', (e) => this.handleSubmit(e))
 
-    document.getElementById('separate-billing').addEventListener('change', (e) => {
-      const billingFields = document.getElementById('billing-address-fields')
+    this.getElement('#separate-billing').addEventListener('change', (e) => {
+      const billingFields = this.getElement('#billing-address-fields')
       if (e.target.checked) {
         billingFields.classList.add('show')
         this.setBillingFieldsRequired(true)
@@ -52,9 +57,9 @@ export class PaymentForm {
   }
 
   setupCardFormatting() {
-    const cardNumber = document.getElementById('card-number')
-    const expiryDate = document.getElementById('expiry-date')
-    const cvc = document.getElementById('cvc')
+    const cardNumber = this.getElement('#card-number')
+    const expiryDate = this.getElement('#expiry-date')
+    const cvc = this.getElement('#cvc')
 
     cardNumber.addEventListener('input', (e) => {
       let value = e.target.value.replace(/\s/g, '')
@@ -79,7 +84,7 @@ export class PaymentForm {
       e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4)
     })
 
-    const phone = document.getElementById('phone')
+    const phone = this.getElement('#phone')
     phone.addEventListener('input', (e) => {
       let value = e.target.value.replace(/[^\d+\s()-]/g, '')
       e.target.value = value
@@ -95,7 +100,7 @@ export class PaymentForm {
     ]
 
     billingFields.forEach(fieldId => {
-      const field = document.getElementById(fieldId)
+      const field = this.getElement(`#${fieldId}`)
       if (required) {
         field.setAttribute('required', 'required')
         field.setAttribute('aria-required', 'true')
@@ -115,8 +120,8 @@ export class PaymentForm {
     ]
 
     billingFields.forEach(fieldId => {
-      const field = document.getElementById(fieldId)
-      const errorMsg = document.getElementById(`${fieldId}-error`)
+      const field = this.getElement(`#${fieldId}`)
+      const errorMsg = this.getElement(`#${fieldId}-error`)
       field.classList.remove('error')
       if (errorMsg) {
         errorMsg.classList.remove('show')
@@ -129,8 +134,8 @@ export class PaymentForm {
     const fieldsToValidate = this.getFieldsForStep(step)
 
     fieldsToValidate.forEach(fieldId => {
-      const field = document.getElementById(fieldId)
-      const errorMsg = document.getElementById(`${fieldId}-error`)
+      const field = this.getElement(`#${fieldId}`)
+      const errorMsg = this.getElement(`#${fieldId}-error`)
 
       field.classList.remove('error')
       if (errorMsg) {
@@ -198,7 +203,7 @@ export class PaymentForm {
     })
 
     if (!isValid) {
-      const firstError = document.querySelector('.error')
+      const firstError = this.root.querySelector('.error')
       if (firstError) {
         firstError.focus()
       }
@@ -225,7 +230,7 @@ export class PaymentForm {
         'cvc'
       ]
 
-      if (document.getElementById('separate-billing').checked) {
+      if (this.getElement('#separate-billing').checked) {
         fields.push(
           'billing-address-line1',
           'billing-state',
@@ -236,37 +241,37 @@ export class PaymentForm {
 
       return fields
     }
-    return []
+      return []
   }
 
   collectFormData() {
     this.formData = {
       userInfo: {
-        fullName: document.getElementById('full-name').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        phone: document.getElementById('phone').value.trim(),
+        fullName: this.getElement('#full-name').value.trim(),
+        email: this.getElement('#email').value.trim(),
+        phone: this.getElement('#phone').value.trim(),
         address: {
-          line1: document.getElementById('address-line1').value.trim(),
-          state: document.getElementById('state').value.trim(),
-          zip: document.getElementById('zip').value.trim(),
-          country: document.getElementById('country').value
+          line1: this.getElement('#address-line1').value.trim(),
+          state: this.getElement('#state').value.trim(),
+          zip: this.getElement('#zip').value.trim(),
+          country: this.getElement('#country').value
         }
       },
       paymentInfo: {
-        cardNumber: document.getElementById('card-number').value.replace(/\s/g, ''),
-        expiryDate: document.getElementById('expiry-date').value,
-        cvc: document.getElementById('cvc').value
+        cardNumber: this.getElement('#card-number').value.replace(/\s/g, ''),
+        expiryDate: this.getElement('#expiry-date').value,
+        cvc: this.getElement('#cvc').value
       }
     }
 
-    const separateBilling = document.getElementById('separate-billing').checked
+    const separateBilling = this.getElement('#separate-billing').checked
 
     if (separateBilling) {
       this.formData.paymentInfo.billingAddress = {
-        line1: document.getElementById('billing-address-line1').value.trim(),
-        state: document.getElementById('billing-state').value.trim(),
-        zip: document.getElementById('billing-zip').value.trim(),
-        country: document.getElementById('billing-country').value
+        line1: this.getElement('#billing-address-line1').value.trim(),
+        state: this.getElement('#billing-state').value.trim(),
+        zip: this.getElement('#billing-zip').value.trim(),
+        country: this.getElement('#billing-country').value
       }
     } else {
       this.formData.paymentInfo.billingAddress = this.formData.userInfo.address
@@ -278,9 +283,9 @@ export class PaymentForm {
   updateSummary() {
     this.collectFormData()
 
-    document.getElementById('summary-name').textContent = this.formData.userInfo.fullName
-    document.getElementById('summary-email').textContent = this.formData.userInfo.email
-    document.getElementById('summary-phone').textContent = this.formData.userInfo.phone
+    this.getElement('#summary-name').textContent = this.formData.userInfo.fullName
+    this.getElement('#summary-email').textContent = this.formData.userInfo.email
+    this.getElement('#summary-phone').textContent = this.formData.userInfo.phone
 
     const addr = this.formData.userInfo.address
     const stateCountryZip = [addr.state, addr.country, addr.zip]
@@ -290,10 +295,10 @@ export class PaymentForm {
       addr.line1,
       stateCountryZip
     ].filter(Boolean).join(', ')
-    document.getElementById('summary-address').textContent = addressText
+    this.getElement('#summary-address').textContent = addressText
 
     const cardLast4 = this.formData.paymentInfo.cardNumber.slice(-4)
-    document.getElementById('summary-card').textContent = `•••• •••• •••• ${cardLast4}`
+    this.getElement('#summary-card').textContent = `•••• •••• •••• ${cardLast4}`
 
     if (this.formData.paymentInfo.separateBillingAddress) {
       const billAddr = this.formData.paymentInfo.billingAddress
@@ -304,10 +309,10 @@ export class PaymentForm {
         billAddr.line1,
         billStateCountryZip
       ].filter(Boolean).join(', ')
-      document.getElementById('summary-billing').textContent = billingText
-      document.getElementById('summary-billing-section').style.display = 'flex'
+      this.getElement('#summary-billing').textContent = billingText
+      this.getElement('#summary-billing-section').style.display = 'flex'
     } else {
-      document.getElementById('summary-billing-section').style.display = 'none'
+      this.getElement('#summary-billing-section').style.display = 'none'
     }
   }
 
@@ -321,13 +326,13 @@ export class PaymentForm {
   }
 
   goToStep(step) {
-    document.querySelectorAll('.form-step').forEach(stepEl => {
+    this.root.querySelectorAll('.form-step').forEach(stepEl => {
       stepEl.classList.remove('active')
     })
 
-    document.querySelector(`.form-step[data-step="${step}"]`).classList.add('active')
+    this.root.querySelector(`.form-step[data-step="${step}"]`).classList.add('active')
 
-    document.querySelectorAll('.progress-step').forEach(progressStep => {
+    this.root.querySelectorAll('.progress-step').forEach(progressStep => {
       const stepNum = parseInt(progressStep.getAttribute('data-step'))
       progressStep.classList.remove('active', 'completed')
 
@@ -346,8 +351,8 @@ export class PaymentForm {
   async handleSubmit(e) {
     e.preventDefault()
 
-    const submitButton = document.getElementById('submit-form')
-    const submitText = document.getElementById('submit-text')
+    const submitButton = this.getElement('#submit-form')
+    const submitText = this.getElement('#submit-text')
 
     submitButton.disabled = true
     submitButton.classList.add('loading')
@@ -367,7 +372,7 @@ export class PaymentForm {
   }
 
   showSuccessMessage() {
-    const formBody = document.querySelector('.form-body')
+    const formBody = this.root.querySelector('.form-body')
     formBody.innerHTML = `
       <div class="confirmation-content">
         <div class="confirmation-icon">✓</div>
