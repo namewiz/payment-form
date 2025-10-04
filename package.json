@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "Standalone payment form UI component for domain registration",
   "scripts": {
-    "dev": "esbuild src/main.js --bundle --outdir=dist --format=esm --sourcemap --loader:.html=text --watch --servedir=.",
-    "build": "esbuild src/main.js --bundle --outdir=dist --format=esm --minify --loader:.html=text",
+    "dev": "esbuild src/main.js --bundle --outdir=dist --format=esm --sourcemap --loader:.html=text --loader:.css=text --watch --servedir=.",
+    "build": "esbuild src/main.js --bundle --outdir=dist --format=esm --minify --loader:.html=text --loader:.css=text",
     "preview": "npx serve .",
     "test": "vitest run",
     "test:watch": "vitest",

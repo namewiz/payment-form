@@ -1,4 +1,4 @@
-import './style.css'
+import styles from './style.css'
 import { PaymentForm } from './payment-form.js'
 import { countries } from './countries.js'
 import formTemplate from './payment-form.html'
@@ -11,6 +11,7 @@ export class PaymentFormElement extends HTMLElement {
     super()
     this.paymentForm = null
     this.isInitialized = false
+    this.shadow = this.attachShadow({ mode: 'open' })
   }
 
   connectedCallback() {
@@ -23,16 +24,24 @@ export class PaymentFormElement extends HTMLElement {
   }
 
   render() {
-    this.innerHTML = ''
+    // Clear shadow root and render template + styles
+    this.shadow.innerHTML = ''
+
+    const styleEl = document.createElement('style')
+    styleEl.textContent = styles
+
     const content = TEMPLATE.content.cloneNode(true)
-    this.appendChild(content)
+    this.shadow.appendChild(styleEl)
+    this.shadow.appendChild(content)
+
     this.populateCountries()
-    this.paymentForm = new PaymentForm(this)
+    // Initialize PaymentForm with the shadow root as context
+    this.paymentForm = new PaymentForm(this.shadow)
   }
 
   populateCountries() {
-    const countrySelect = this.querySelector('#country')
-    const billingCountrySelect = this.querySelector('#billing-country')
+    const countrySelect = this.shadow.querySelector('#country')
+    const billingCountrySelect = this.shadow.querySelector('#billing-country')
 
     if (!countrySelect || !billingCountrySelect) {
       return
@@ -46,10 +55,12 @@ export class PaymentFormElement extends HTMLElement {
   }
 }
 
+// Define the custom element globally without auto-initializing
+if (!customElements.get('payment-form')) {
+  customElements.define('payment-form', PaymentFormElement)
+}
+
 export function registerPaymentForm({ selector = '#app' } = {}) {
-  if (!customElements.get('payment-form')) {
-    customElements.define('payment-form', PaymentFormElement)
-  }
 
   if (!selector) {
     return null
@@ -68,5 +79,3 @@ export function registerPaymentForm({ selector = '#app' } = {}) {
 
   return formElement
 }
-
-registerPaymentForm()

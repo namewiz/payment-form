@@ -14,7 +14,8 @@ export class PaymentForm {
 
   initTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light'
-    document.documentElement.setAttribute('data-theme', savedTheme)
+    const themeTarget = this.root?.host || document.documentElement
+    themeTarget.setAttribute('data-theme', savedTheme)
     this.updateThemeIcon(savedTheme)
   }
 
@@ -49,9 +50,10 @@ export class PaymentForm {
   }
 
   toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme')
+    const themeTarget = this.root?.host || document.documentElement
+    const currentTheme = themeTarget.getAttribute('data-theme')
     const newTheme = currentTheme === 'light' ? 'dark' : 'light'
-    document.documentElement.setAttribute('data-theme', newTheme)
+    themeTarget.setAttribute('data-theme', newTheme)
     localStorage.setItem('theme', newTheme)
     this.updateThemeIcon(newTheme)
   }
