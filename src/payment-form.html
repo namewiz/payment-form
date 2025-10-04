@@ -10,21 +10,62 @@
     <div class="progress-bar">
       <div class="progress-step active" data-step="1">
         <div class="progress-circle">1</div>
-        <span class="progress-label">Your Info</span>
+        <span class="progress-label">Order</span>
       </div>
       <div class="progress-step" data-step="2">
         <div class="progress-circle">2</div>
-        <span class="progress-label">Payment</span>
+        <span class="progress-label">Your Info</span>
       </div>
       <div class="progress-step" data-step="3">
         <div class="progress-circle">3</div>
-        <span class="progress-label">Confirm</span>
+        <span class="progress-label">Payment</span>
+      </div>
+      <div class="progress-step" data-step="4">
+        <div class="progress-circle">4</div>
+        <span class="progress-label">Status</span>
       </div>
     </div>
 
     <form id="payment-form" class="form-body" novalidate>
-      <!-- Step 1: User Information -->
+      <!-- Step 1: Order Summary -->
       <div class="form-step active" data-step="1">
+        <div class="summary-section">
+          <h3>Order Summary</h3>
+          <div class="summary-item">
+            <span class="summary-label">Domain</span>
+            <span class="summary-value" id="order-domain">example.ng</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Period</span>
+            <span class="summary-value" id="order-period">1 year</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">Total</span>
+            <span class="summary-value" id="order-total">$0.00</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="discount-code">Discount code</label>
+          <input
+            type="text"
+            id="discount-code"
+            name="discountCode"
+            placeholder="DISCOUNT2025"
+            autocomplete="off"
+          />
+          <span class="hint">Discounts are applied at checkout.</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-primary" id="next-step-1">
+            Continue
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: User Information -->
+      <div class="form-step" data-step="2">
         <div class="form-group">
           <label for="full-name">
             Full Name<span class="required">*</span>
@@ -145,14 +186,14 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" class="btn-primary" id="next-step-1">
+          <button type="button" class="btn-primary" id="next-step-2">
             Continue to Payment
           </button>
         </div>
       </div>
 
-      <!-- Step 2: Payment Information -->
-      <div class="form-step" data-step="2">
+      <!-- Step 3: Payment Information -->
+      <div class="form-step" data-step="3">
         <div class="form-group">
           <label for="card-number">
             Card Number<span class="required">*</span>
@@ -283,63 +324,25 @@
           <button type="button" class="btn-secondary" id="prev-step-2">
             Back
           </button>
-          <button type="button" class="btn-primary" id="next-step-2">
-            Review Order
+          <button type="submit" class="btn-primary" id="submit-form">
+            <span id="submit-text">Pay Now</span>
+            <span class="loading-spinner"></span>
           </button>
         </div>
       </div>
 
-      <!-- Step 3: Confirmation -->
-      <div class="form-step" data-step="3">
-        <div class="confirmation-content">
-          <h2>Review Your Information</h2>
-          <p>Please review your details before submitting</p>
-
+      <!-- Step 4: Status / Processing -->
+      <div class="form-step" data-step="4">
+        <div class="confirmation-content" id="status-content">
+          <div class="confirmation-icon" aria-hidden="true">⏳</div>
+          <h2>Processing your order</h2>
+          <p>Please do not close this page while we complete your purchase.</p>
           <div class="summary-section">
-            <h3>Contact Information</h3>
             <div class="summary-item">
-              <span class="summary-label">Name:</span>
-              <span class="summary-value" id="summary-name"></span>
-            </div>
-            <div class="summary-item">
-              <span class="summary-label">Email:</span>
-              <span class="summary-value" id="summary-email"></span>
-            </div>
-            <div class="summary-item">
-              <span class="summary-label">Phone:</span>
-              <span class="summary-value" id="summary-phone"></span>
+              <span class="summary-label">Status</span>
+              <span class="summary-value" id="status-text">Initializing...</span>
             </div>
           </div>
-
-          <div class="summary-section">
-            <h3>Shipping Address</h3>
-            <div class="summary-item">
-              <span class="summary-label">Address:</span>
-              <span class="summary-value" id="summary-address"></span>
-            </div>
-          </div>
-
-          <div class="summary-section">
-            <h3>Payment Information</h3>
-            <div class="summary-item">
-              <span class="summary-label">Card:</span>
-              <span class="summary-value" id="summary-card"></span>
-            </div>
-            <div class="summary-item" id="summary-billing-section" style="display: none;">
-              <span class="summary-label">Billing Address:</span>
-              <span class="summary-value" id="summary-billing"></span>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn-secondary" id="prev-step-3">
-            Back
-          </button>
-          <button type="submit" class="btn-primary" id="submit-form">
-            <span id="submit-text">Complete Payment</span>
-            <span class="loading-spinner"></span>
-          </button>
         </div>
       </div>
     </form>

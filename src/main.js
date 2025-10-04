@@ -36,7 +36,29 @@ export class PaymentFormElement extends HTMLElement {
 
     this.populateCountries()
     // Initialize PaymentForm with the shadow root as context
-    this.paymentForm = new PaymentForm(this.shadow)
+    const options = this.readOptionsFromAttributes()
+    this.paymentForm = new PaymentForm(this.shadow, options)
+  }
+
+  readOptionsFromAttributes() {
+    const attr = (name) => this.getAttribute(name)
+    const dataAttr = (name) => this.getAttribute(`data-${name}`)
+
+    // Support both data-* and plain attributes
+    const domain = dataAttr('domain') || attr('domain') || undefined
+    const currency = (dataAttr('currency') || attr('currency') || 'USD')
+
+    const customer = {
+      name: dataAttr('name') || attr('name') || undefined,
+      email: dataAttr('email') || attr('email') || undefined,
+      phone: dataAttr('phone') || attr('phone') || undefined,
+    }
+
+    const basePrice = attr('base-price') ? Number(attr('base-price')) : undefined
+    const taxesRate = attr('taxes-rate') ? Number(attr('taxes-rate')) : undefined
+    const feeAmount = attr('fee-amount') ? Number(attr('fee-amount')) : undefined
+
+    return { domain, currency, customer, basePrice, taxesRate, feeAmount }
   }
 
   populateCountries() {
