@@ -3,15 +3,70 @@ import { PaymentForm } from './payment-form.js'
 import { countries } from './countries.js'
 import formTemplate from './payment-form.html'
 
-document.querySelector('#app').innerHTML = formTemplate
+const TEMPLATE = document.createElement('template')
+TEMPLATE.innerHTML = formTemplate
 
-const countrySelect = document.getElementById('country')
-const billingCountrySelect = document.getElementById('billing-country')
+export class PaymentFormElement extends HTMLElement {
+  constructor() {
+    super()
+    this.paymentForm = null
+    this.isInitialized = false
+  }
 
-const countryOptions = '<option value="">Select Country</option>' +
-  countries.map(c => `<option value="${c.code}">${c.name}</option>`).join('')
+  connectedCallback() {
+    if (this.isInitialized) {
+      return
+    }
 
-countrySelect.innerHTML = countryOptions
-billingCountrySelect.innerHTML = countryOptions
+    this.render()
+    this.isInitialized = true
+  }
 
-new PaymentForm()
+  render() {
+    this.innerHTML = ''
+    const content = TEMPLATE.content.cloneNode(true)
+    this.appendChild(content)
+    this.populateCountries()
+    this.paymentForm = new PaymentForm(this)
+  }
+
+  populateCountries() {
+    const countrySelect = this.querySelector('#country')
+    const billingCountrySelect = this.querySelector('#billing-country')
+
+    if (!countrySelect || !billingCountrySelect) {
+      return
+    }
+
+    const countryOptions = '<option value="">Select Country</option>' +
+      countries.map(c => `<option value="${c.code}">${c.name}</option>`).join('')
+
+    countrySelect.innerHTML = countryOptions
+    billingCountrySelect.innerHTML = countryOptions
+  }
+}
+
+export function registerPaymentForm({ selector = '#app' } = {}) {
+  if (!customElements.get('payment-form')) {
+    customElements.define('payment-form', PaymentFormElement)
+  }
+
+  if (!selector) {
+    return null
+  }
+
+  const container = document.querySelector(selector)
+  if (!container) {
+    return null
+  }
+
+  let formElement = container.querySelector('payment-form')
+  if (!formElement) {
+    formElement = document.createElement('payment-form')
+    container.appendChild(formElement)
+  }
+
+  return formElement
+}
+
+registerPaymentForm()
