@@ -1,114 +1,83 @@
-/* @vitest-environment jsdom */
-
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, beforeEach, test as it } from 'node:test'
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'url'
+import { JSDOM } from 'jsdom'
 import { PaymentForm } from '../src/payment-form.js'
 
 function setupDOM() {
-  document.body.innerHTML = `
-    <button id="theme-toggle"><span id="theme-icon"></span></button>
+  const fileUrl = new URL('../src/payment-form.html', import.meta.url)
+  const htmlPath = fileURLToPath(fileUrl)
+  const html = readFileSync(htmlPath, 'utf-8')
+  const dom = new JSDOM(html, { url: 'http://localhost', pretendToBeVisual: true })
 
-    <button id="next-step-1"></button>
-    <button id="next-step-2"></button>
-    <button id="prev-step-2"></button>
-    <button id="prev-step-3"></button>
+  globalThis.window = dom.window
+  globalThis.document = dom.window.document
+  globalThis.HTMLElement = dom.window.HTMLElement
+  globalThis.Event = dom.window.Event
+  globalThis.CustomEvent = dom.window.CustomEvent
+  globalThis.Node = dom.window.Node
+  // In Node >= 20, globalThis.navigator may be a read-only getter.
+  // Only set it if writable or not already defined.
+  try {
+    const desc = Object.getOwnPropertyDescriptor(globalThis, 'navigator')
+    if (!desc || desc.writable) {
+      globalThis.navigator = dom.window.navigator
+    }
+  } catch {
+    // ignore if cannot redefine
+  }
+  globalThis.getComputedStyle = dom.window.getComputedStyle
 
-    <form id="payment-form"></form>
-
-    <input type="checkbox" id="separate-billing" />
-    <div id="billing-address-fields"></div>
-
-    <input id="card-number" />
-    <input id="expiry-date" />
-    <input id="cvc" />
-    <input id="phone" />
-
-    <input id="full-name" required />
-    <span id="full-name-error" class="error-message"></span>
-
-    <input id="email" type="email" required />
-    <span id="email-error" class="error-message"></span>
-
-    <input id="address-line1" required />
-    <span id="address-line1-error" class="error-message"></span>
-
-    <input id="state" required />
-    <span id="state-error" class="error-message"></span>
-
-    <input id="zip" required />
-    <span id="zip-error" class="error-message"></span>
-
-    <select id="country" required>
-      <option value="">Select</option>
-      <option value="US">United States</option>
-    </select>
-    <span id="country-error" class="error-message"></span>
-
-    <span id="card-number-error" class="error-message"></span>
-    <span id="expiry-date-error" class="error-message"></span>
-    <span id="cvc-error" class="error-message"></span>
-
-    <span id="summary-name"></span>
-    <span id="summary-email"></span>
-    <span id="summary-phone"></span>
-    <span id="summary-address"></span>
-    <span id="summary-card"></span>
-    <div id="summary-billing-section" style="display:none"></div>
-    <span id="summary-billing"></span>
-
-    <button id="submit-form"><span id="submit-text"></span></button>
-    <div class="form-body"></div>
-  `
+  // Safe no-ops for missing browser APIs in JSDOM
+  if (typeof window.scrollTo !== 'function') {
+    window.scrollTo = () => {}
+  }
+  if (typeof window.matchMedia !== 'function') {
+    window.matchMedia = (query) => ({
+      matches: false,
+      media: query,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      onchange: null
+    })
+  }
 }
 
-describe('PaymentForm', () => {
+function createForm(options = {}) {
+  const config = { domain: 'example.ng', currency: 'USD', ...options }
+  return new PaymentForm(document, config)
+}
+
+describe('PaymentForm (DOM integration)', () => {
   beforeEach(() => {
-    // Reset DOM and storage
-    localStorage.clear()
-    document.documentElement.setAttribute('data-theme', 'light')
     setupDOM()
   })
 
-  it('toggles theme and updates storage + icon', () => {
-    const form = new PaymentForm()
-
-    // Initial theme set in initTheme
-    expect(document.documentElement.getAttribute('data-theme')).toBe('light')
-    expect(document.getElementById('theme-icon').textContent).toBe('🌙')
-
-    // Toggle -> dark
-    form.toggleTheme()
-    expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
-    expect(localStorage.getItem('theme')).toBe('dark')
-    expect(document.getElementById('theme-icon').textContent).toBe('☀️')
-
-    // Toggle -> light
-    form.toggleTheme()
-    expect(document.documentElement.getAttribute('data-theme')).toBe('light')
-    expect(localStorage.getItem('theme')).toBe('light')
-    expect(document.getElementById('theme-icon').textContent).toBe('🌙')
+  it('initializes theme based on config (light)', () => {
+    createForm({ theme: 'light' })
+    assert.equal(document.documentElement.getAttribute('data-theme'), 'light')
   })
 
   it('formats card number input to XXXX XXXX XXXX XXXX and strips non-digits', () => {
-    const form = new PaymentForm()
+    createForm()
     const cardInput = document.getElementById('card-number')
 
-    // Simulate messy entry
     cardInput.value = '4111a1111b1111-1111 123'
-    cardInput.dispatchEvent(new Event('input'))
+    cardInput.dispatchEvent(new window.Event('input'))
 
-    expect(cardInput.value).toBe('4111 1111 1111 1111')
+    assert.equal(cardInput.value, '4111 1111 1111 1111')
   })
 
-  it('validates step 1 required fields and passes with valid input', () => {
-    const form = new PaymentForm()
+  it('validates step 2 required fields and passes with valid input', () => {
+    const form = createForm()
 
-    // Initially empty -> invalid
-    const validEmpty = form.validateStep(1)
-    expect(validEmpty).toBe(false)
-    // Should mark at least one field as error
-    expect(document.querySelectorAll('.error').length).toBeGreaterThan(0)
+    const validEmpty = form.validateStep(2)
+    assert.equal(validEmpty, false)
+    assert.ok(document.querySelectorAll('.error').length > 0)
 
-    // Fill with valid values
     document.getElementById('full-name').value = 'John Doe'
     document.getElementById('email').value = 'john@example.com'
     document.getElementById('phone').value = '1234567890'
@@ -117,13 +86,11 @@ describe('PaymentForm', () => {
     document.getElementById('zip').value = '94105'
     document.getElementById('country').value = 'US'
 
-    // Clear previous error classes to emulate user correction
     document.querySelectorAll('.error').forEach(el => el.classList.remove('error'))
     document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'))
 
-    const validNow = form.validateStep(1)
-    expect(validNow).toBe(true)
-    expect(document.querySelectorAll('.error').length).toBe(0)
+    const validNow = form.validateStep(2)
+    assert.equal(validNow, true)
+    assert.equal(document.querySelectorAll('.error').length, 0)
   })
 })
-

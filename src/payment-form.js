@@ -1,3 +1,5 @@
+import { countries } from './countries.js'
+
 export class PaymentForm {
   constructor (rootElement = document, options = {}) {
     this.root = rootElement
@@ -28,6 +30,7 @@ export class PaymentForm {
 
     this.initTheme()
     this.initEventListeners()
+    this.populateCountries()
 
     // Initialize UI state
     this.prefillCustomerInfo()
@@ -84,6 +87,25 @@ export class PaymentForm {
     })
 
     this.setupCardFormatting()
+  }
+
+  populateCountries() {
+    const countrySelect = this.getElement('#country')
+    const billingCountrySelect = this.getElement('#billing-country')
+    if (!countrySelect && !billingCountrySelect) return
+
+    const buildOptions = () => {
+      const base = [{ code: '', name: 'Select Country' }, ...countries]
+      return base.map(c => `<option value="${c.code}">${c.name}</option>`).join('')
+    }
+
+    const optionsHtml = buildOptions()
+    if (countrySelect && countrySelect.options.length === 0) {
+      countrySelect.innerHTML = optionsHtml
+    }
+    if (billingCountrySelect && billingCountrySelect.options.length === 0) {
+      billingCountrySelect.innerHTML = optionsHtml
+    }
   }
 
   // ---------- Analytics helpers ----------

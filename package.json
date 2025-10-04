@@ -6,9 +6,9 @@
     "dev": "esbuild src/main.js --bundle --outdir=dist --format=esm --sourcemap --loader:.html=text --loader:.css=text --watch --servedir=.",
     "build": "esbuild src/main.js --bundle --outdir=dist --format=esm --minify --loader:.html=text --loader:.css=text",
     "preview": "npx serve .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:run": "vitest run"
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "test:run": "node --test"
   },
   "type": "module",
   "homepage": "https://namewiz.github.io/payment-form",
@@ -25,10 +25,13 @@
     "domain-payment",
     "standalone-payment-component"
   ],
+  "engines": {
+    "node": "^22.12.0",
+    "npm": "^10.9.0"
+  },
   "license": "MIT",
   "devDependencies": {
     "esbuild": "^0.25.10",
-    "jsdom": "^25.0.1",
-    "vitest": "^3.2.4"
+    "jsdom": "^25.0.1"
   }
 }

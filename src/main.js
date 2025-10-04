@@ -1,4 +1,3 @@
-import { countries } from './countries.js'
 import formTemplate from './payment-form.html'
 import { PaymentForm } from './payment-form.js'
 import styles from './style.css'
@@ -46,7 +45,6 @@ export class PaymentFormElement extends HTMLElement {
     this.shadow.appendChild(styleEl)
     this.shadow.appendChild(content)
 
-    this.populateCountries()
     this.paymentForm = new PaymentForm(this.shadow, options)
   }
 
@@ -82,43 +80,9 @@ export class PaymentFormElement extends HTMLElement {
     return { domain, currency, customer, basePrice, taxesRate, feeAmount, theme }
   }
 
-  populateCountries() {
-    const countrySelect = this.shadow.querySelector('#country')
-    const billingCountrySelect = this.shadow.querySelector('#billing-country')
-
-    if (!countrySelect || !billingCountrySelect) {
-      return
-    }
-
-    const countryOptions = '<option value="">Select Country</option>' +
-      countries.map(c => `<option value="${c.code}">${c.name}</option>`).join('')
-
-    countrySelect.innerHTML = countryOptions
-    billingCountrySelect.innerHTML = countryOptions
-  }
 }
 
 // Define the custom element globally without auto-initializing
 if (!customElements.get('payment-form')) {
   customElements.define('payment-form', PaymentFormElement)
-}
-
-export function registerPaymentForm({ selector = '#app' } = {}) {
-
-  if (!selector) {
-    return null
-  }
-
-  const container = document.querySelector(selector)
-  if (!container) {
-    return null
-  }
-
-  let formElement = container.querySelector('payment-form')
-  if (!formElement) {
-    formElement = document.createElement('payment-form')
-    container.appendChild(formElement)
-  }
-
-  return formElement
 }
