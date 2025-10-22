@@ -1,8 +1,16 @@
+TODO:
+
 - integrate recaptcha v3
 - integrate stripe-js
-- separate out styles, implement alternates
-- deploy as web-component
-- fix demo page.
+- (optional) dummy backend for testing.
+- add a review step. Necessary for discounts, skipped user info, separating validations+security for creating-payment from submissions
+- email address validation in review step.
 - integrate domainprices, to parse domain and get actual prices
+- Luhn validator for credit card numbers.
+- Update on attribute change (explore complexity trade off first)
+- add UI tests
+- separate out styles, implement alternates (e.g. accordion flow), support overrides.
+- themes support, (explore complexity trade-off first, simple and unintrusive to business logic).
+- post-purchase flow (phone number validation (as auth backup), name-servers, static site integration, hosting + email)
 
 
