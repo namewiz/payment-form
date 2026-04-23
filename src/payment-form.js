@@ -1,4 +1,5 @@
 import { countries } from './countries.js'
+import { computeCartTotals } from './cart.js'
 
 export class PaymentForm {
   constructor (rootElement = document, options = {}) {
@@ -13,6 +14,9 @@ export class PaymentForm {
       taxesRate: typeof options.taxesRate === 'number' ? options.taxesRate : 0.075,
       feeAmount: typeof options.feeAmount === 'number' ? options.feeAmount : 1.5,
       customer: options.customer || {},
+      items: options.items || [],
+      paymentStyle: options.paymentStyle || 'inline',
+      transactionType: options.transactionType || 'registration',
       // theme: 'light' | 'dark' | 'system' (default)
       theme: (() => {
         const t = typeof options.theme === 'string' ? options.theme.trim().toLowerCase() : undefined
@@ -158,12 +162,7 @@ export class PaymentForm {
   }
 
   computeAndRenderOrderSummary() {
-    const subtotal = Number(this.config.basePrice)
-    const tax = Math.round(subtotal * this.config.taxesRate * 100) / 100
-    const fees = Math.round(this.config.feeAmount * 100) / 100
-    const total = Math.round((subtotal + tax + fees) * 100) / 100
-
-    this.orderTotals = { subtotal, tax, fees, total }
+    this.orderTotals = computeCartTotals(this.config.items)
 
     const fmt = (n) => `${this.currencySymbol}${n.toFixed(2)}`
 
@@ -171,8 +170,10 @@ export class PaymentForm {
     const periodEl = this.getElement('#order-period')
     const totalEl = this.getElement('#order-total')
     if (domainEl) domainEl.textContent = this.config.domain
-    if (periodEl) periodEl.textContent = '1 year'
-    if (totalEl) totalEl.textContent = fmt(total)
+    // Show period from first item's years (single-item legacy mode)
+    const years = this.config.items.length > 0 ? this.config.items[0].years : 1
+    if (periodEl) periodEl.textContent = years === 1 ? '1 year' : `${years} years`
+    if (totalEl) totalEl.textContent = fmt(this.orderTotals.total)
   }
 
   setupCardFormatting() {
@@ -370,6 +371,7 @@ export class PaymentForm {
       order: {
         domain: this.config.domain,
         currency: this.config.currency,
+        items: this.config.items,
         discountCode,
         totals: this.orderTotals
       },
@@ -557,6 +559,7 @@ export class PaymentForm {
 
     // Success summary
     const txnId = 'txn_' + Math.random().toString(36).slice(2, 10)
+    const years = this.config.items.length > 0 ? this.config.items[0].years : 1
     const statusContainer = this.getElement('#status-content')
     if (statusContainer) {
       statusContainer.innerHTML = `
@@ -570,7 +573,7 @@ export class PaymentForm {
           </div>
           <div class="summary-item">
             <span class="summary-label">Period</span>
-            <span class="summary-value">1 year</span>
+            <span class="summary-value">${years === 1 ? '1 year' : years + ' years'}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Amount</span>
@@ -601,14 +604,12 @@ export class PaymentForm {
       value,
       currency: this.config.currency,
       coupon: coupon || undefined,
-      items: [
-        {
-          item_id: this.config.domain,
-          item_name: 'Domain Registration',
-          price: value,
-          quantity: 1
-        }
-      ]
+      items: this.config.items.map((item) => ({
+        item_id: item.name,
+        item_name: item.type + ' ' + item.action,
+        price: item.unitPrice * item.years,
+        quantity: 1
+      }))
     })
   }
 
