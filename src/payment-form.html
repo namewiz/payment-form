@@ -4,28 +4,19 @@
   </div>
 
   <div class="progress-bar" aria-hidden="true">
-    <div class="progress-step active" data-step="1"></div>
-    <div class="progress-step" data-step="2"></div>
-    <div class="progress-step" data-step="3"></div>
-    <div class="progress-step" data-step="4"></div>
+    <!-- Progress steps rendered dynamically by JS based on pipeline -->
   </div>
 
   <form id="payment-form" class="form-body" novalidate>
-    <!-- Step 1: Order Summary -->
-    <div class="form-step active" data-step="1">
-      <div class="summary-section">
-        <h3>Order Summary</h3>
-        <div class="summary-item">
-          <span class="summary-label">Domain</span>
-          <span class="summary-value" id="order-domain">example.ng</span>
+    <!-- Step: Cart -->
+    <div class="form-step active" data-step="cart">
+      <div class="cart-section">
+        <h3>Your Cart</h3>
+        <div id="cart-items">
+          <!-- Cart item rows rendered by JS -->
         </div>
-        <div class="summary-item">
-          <span class="summary-label">Period</span>
-          <span class="summary-value" id="order-period">1 year</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">Total</span>
-          <span class="summary-value" id="order-total">$0.00</span>
+        <div class="cart-totals" id="cart-totals">
+          <!-- Totals rendered by JS -->
         </div>
       </div>
 
@@ -36,14 +27,14 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn-primary" id="next-step-1">
+        <button type="button" class="btn-primary" id="next-step-cart">
           Continue
         </button>
       </div>
     </div>
 
-    <!-- Step 2: User Information -->
-    <div class="form-step" data-step="2">
+    <!-- Step: Customer Information -->
+    <div class="form-step" data-step="customer">
       <div class="form-group">
         <label for="full-name">
           Full Name<span class="required">*</span>
@@ -115,17 +106,17 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn-secondary" id="prev-step-1">
+        <button type="button" class="btn-secondary" id="prev-step-customer">
           Back
         </button>
-        <button type="button" class="btn-primary" id="next-step-2">
+        <button type="button" class="btn-primary" id="next-step-customer">
           Continue to Payment
         </button>
       </div>
     </div>
 
-    <!-- Step 3: Payment Information -->
-    <div class="form-step" data-step="3">
+    <!-- Step: Payment Information -->
+    <div class="form-step" data-step="payment">
       <div class="form-group">
         <label for="card-number">
           Card Number<span class="required">*</span>
@@ -200,7 +191,7 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn-secondary" id="prev-step-2">
+        <button type="button" class="btn-secondary" id="prev-step-payment">
           Back
         </button>
         <button type="submit" class="btn-primary" id="submit-form">
@@ -210,8 +201,8 @@
       </div>
     </div>
 
-    <!-- Step 4: Status / Processing -->
-    <div class="form-step" data-step="4">
+    <!-- Step: Status / Processing -->
+    <div class="form-step" data-step="processing">
       <div class="confirmation-content" id="status-content">
         <div class="confirmation-icon" aria-hidden="true">⏳</div>
         <h2>Processing your order</h2>
