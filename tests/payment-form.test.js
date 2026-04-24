@@ -74,7 +74,7 @@ describe('PaymentForm (DOM integration)', () => {
   it('validates step 2 required fields and passes with valid input', () => {
     const form = createForm()
 
-    const validEmpty = form.validateStep(2)
+    const validEmpty = form.validateStep('customer')
     assert.equal(validEmpty, false)
     assert.ok(document.querySelectorAll('.error').length > 0)
 
@@ -89,8 +89,66 @@ describe('PaymentForm (DOM integration)', () => {
     document.querySelectorAll('.error').forEach(el => el.classList.remove('error'))
     document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'))
 
-    const validNow = form.validateStep(2)
+    const validNow = form.validateStep('customer')
     assert.equal(validNow, true)
     assert.equal(document.querySelectorAll('.error').length, 0)
+  })
+
+  it('navigates forward through pipeline steps', () => {
+    const form = createForm()
+
+    assert.equal(form.currentStep, 'cart')
+
+    // Move to customer step
+    form.nextStep()
+    assert.equal(form.currentStep, 'customer')
+
+    // Cart step should show as completed in progress bar
+    const cartProgress = document.querySelector('.progress-step[data-step="cart"]')
+    assert.ok(cartProgress.classList.contains('completed'))
+  })
+
+  it('navigates backward through pipeline steps', () => {
+    const form = createForm()
+
+    form.nextStep() // cart -> customer
+    assert.equal(form.currentStep, 'customer')
+
+    form.prevStep() // customer -> cart
+    assert.equal(form.currentStep, 'cart')
+  })
+
+  it('skips customer step when all customer info is prefilled', () => {
+    const form = createForm({
+      customer: { name: 'John', email: 'john@test.com', phone: '+1234567890' }
+    })
+
+    assert.equal(form.skipCustomerStep, true)
+    assert.equal(form.currentStep, 'cart')
+
+    form.nextStep() // should skip customer, go to payment
+    assert.equal(form.currentStep, 'payment')
+
+    form.prevStep() // should skip customer backward, go to cart
+    assert.equal(form.currentStep, 'cart')
+  })
+
+  it('renders cart items in the cart step', () => {
+    createForm({
+      items: [
+        { type: 'domain', name: 'example.ng', unitPrice: 12, taxRate: 0.075, feeAmount: 1.5, years: 1 }
+      ]
+    })
+
+    const cartItems = document.getElementById('cart-items')
+    assert.ok(cartItems.innerHTML.includes('example.ng'))
+    assert.ok(cartItems.innerHTML.includes('Domain'))
+  })
+
+  it('renders dynamic progress bar with correct number of steps', () => {
+    createForm()
+
+    const progressSteps = document.querySelectorAll('.progress-step')
+    assert.equal(progressSteps.length, 4) // cart, customer, payment, processing
   })
 })

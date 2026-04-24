@@ -1,10 +1,11 @@
 import { countries } from './countries.js'
-import { computeCartTotals } from './cart.js'
+import { computeCartTotals, renderCartHTML, renderCartTotalsHTML } from './cart.js'
 
 export class PaymentForm {
   constructor (rootElement = document, options = {}) {
     this.root = rootElement
-    this.currentStep = 1
+    this.pipeline = ['cart', 'customer', 'payment', 'processing']
+    this.currentStep = 'cart'
     this.formData = {}
     this.config = {
       // domain, currency are required, do not render form without them.
@@ -37,7 +38,9 @@ export class PaymentForm {
     this.populateCountries()
 
     // Initialize UI state
+    this.renderProgressBar()
     this.prefillCustomerInfo()
+    this.renderCart()
     this.computeAndRenderOrderSummary()
     // Analytics: mark form viewed if gtag is available
     this.trackEvent && this.trackEvent('payment_form_viewed', {
@@ -62,17 +65,17 @@ export class PaymentForm {
   }
 
   initEventListeners() {
-    const next1 = this.getElement('#next-step-1')
-    if (next1) next1.addEventListener('click', () => this.validateAndNextStep(1))
+    const nextCart = this.getElement('#next-step-cart')
+    if (nextCart) nextCart.addEventListener('click', () => this.nextStep())
 
-    const next2 = this.getElement('#next-step-2')
-    if (next2) next2.addEventListener('click', () => this.validateAndNextStep(2))
+    const nextCustomer = this.getElement('#next-step-customer')
+    if (nextCustomer) nextCustomer.addEventListener('click', () => this.validateAndNextStep('customer'))
 
-    const prev1 = this.getElement('#prev-step-1')
-    if (prev1) prev1.addEventListener('click', () => this.goToStep(1))
+    const prevCustomer = this.getElement('#prev-step-customer')
+    if (prevCustomer) prevCustomer.addEventListener('click', () => this.prevStep())
 
-    const prev2 = this.getElement('#prev-step-2')
-    if (prev2) prev2.addEventListener('click', () => this.goToStep(2))
+    const prevPayment = this.getElement('#prev-step-payment')
+    if (prevPayment) prevPayment.addEventListener('click', () => this.prevStep())
 
     const formEl = this.getElement('#payment-form')
     if (formEl) formEl.addEventListener('submit', (e) => this.handleSubmit(e))
@@ -163,17 +166,52 @@ export class PaymentForm {
 
   computeAndRenderOrderSummary() {
     this.orderTotals = computeCartTotals(this.config.items)
+    const totalsEl = this.getElement('#cart-totals')
+    if (totalsEl) {
+      totalsEl.innerHTML = renderCartTotalsHTML(this.orderTotals, this.currencySymbol)
+    }
+  }
 
-    const fmt = (n) => `${this.currencySymbol}${n.toFixed(2)}`
+  renderCart() {
+    const container = this.getElement('#cart-items')
+    if (!container) return
 
-    const domainEl = this.getElement('#order-domain')
-    const periodEl = this.getElement('#order-period')
-    const totalEl = this.getElement('#order-total')
-    if (domainEl) domainEl.textContent = this.config.domain
-    // Show period from first item's years (single-item legacy mode)
-    const years = this.config.items.length > 0 ? this.config.items[0].years : 1
-    if (periodEl) periodEl.textContent = years === 1 ? '1 year' : `${years} years`
-    if (totalEl) totalEl.textContent = fmt(this.orderTotals.total)
+    container.innerHTML = renderCartHTML(this.config.items, this.currencySymbol)
+
+    // Wire up year selectors
+    container.querySelectorAll('.cart-year-select').forEach((select) => {
+      select.addEventListener('change', (e) => {
+        const index = parseInt(e.target.dataset.index)
+        this.config.items[index].years = parseInt(e.target.value)
+        this.renderCart()
+        this.computeAndRenderOrderSummary()
+      })
+    })
+
+    // Wire up remove buttons
+    container.querySelectorAll('.cart-remove-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index)
+        if (this.config.items.length <= 1) return
+        this.config.items.splice(index, 1)
+        this.renderCart()
+        this.computeAndRenderOrderSummary()
+      })
+    })
+  }
+
+  setItems(items) {
+    this.config.items = items
+    this.renderCart()
+    this.computeAndRenderOrderSummary()
+  }
+
+  renderProgressBar() {
+    const bar = this.getElement('.progress-bar')
+    if (!bar) return
+    bar.innerHTML = this.pipeline
+      .map((name) => `<div class="progress-step${name === this.currentStep ? ' active' : ''}" data-step="${name}"></div>`)
+      .join('')
   }
 
   setupCardFormatting() {
@@ -333,8 +371,7 @@ export class PaymentForm {
   }
 
   getFieldsForStep(step) {
-    // Step 1 (Order) has no required inputs
-    if (step === 2) {
+    if (step === 'customer') {
       return [
         'full-name',
         'email',
@@ -344,7 +381,7 @@ export class PaymentForm {
         'zip',
         'country'
       ]
-    } else if (step === 3) {
+    } else if (step === 'payment') {
       const fields = [
         'card-number',
         'expiry-date',
@@ -410,36 +447,63 @@ export class PaymentForm {
   }
 
   validateAndNextStep(currentStep) {
-    // Step 1 has no validation
-    if (currentStep === 1) {
-      this.collectFormData()
-      this.goToStep(2)
-      return
-    }
     if (this.validateStep(currentStep)) {
       this.collectFormData()
-      this.goToStep(currentStep + 1)
+      this.nextStep()
     }
   }
 
-  goToStep(step) {
-    // Skip customer info step if fully provided
-    if (step === 2 && this.skipCustomerStep) {
-      step = 3
+  nextStep() {
+    const currentIndex = this.pipeline.indexOf(this.currentStep)
+    if (currentIndex < 0 || currentIndex >= this.pipeline.length - 1) return
+
+    let nextName = this.pipeline[currentIndex + 1]
+
+    // Skip customer step if fully prefilled
+    if (nextName === 'customer' && this.skipCustomerStep) {
+      const skipIndex = currentIndex + 2
+      if (skipIndex < this.pipeline.length) {
+        nextName = this.pipeline[skipIndex]
+      }
     }
+
+    this.collectFormData()
+    this.goToStep(nextName)
+  }
+
+  prevStep() {
+    const currentIndex = this.pipeline.indexOf(this.currentStep)
+    if (currentIndex <= 0) return
+
+    let prevName = this.pipeline[currentIndex - 1]
+
+    // Skip customer step backward if fully prefilled
+    if (prevName === 'customer' && this.skipCustomerStep) {
+      const skipIndex = currentIndex - 2
+      if (skipIndex >= 0) {
+        prevName = this.pipeline[skipIndex]
+      }
+    }
+
+    this.goToStep(prevName)
+  }
+
+  goToStep(step) {
     this.root.querySelectorAll('.form-step').forEach(stepEl => {
       stepEl.classList.remove('active')
     })
 
-    this.root.querySelector(`.form-step[data-step="${step}"]`).classList.add('active')
+    const targetStep = this.root.querySelector(`.form-step[data-step="${step}"]`)
+    if (targetStep) targetStep.classList.add('active')
 
+    const stepIndex = this.pipeline.indexOf(step)
     this.root.querySelectorAll('.progress-step').forEach(progressStep => {
-      const stepNum = parseInt(progressStep.getAttribute('data-step'))
+      const progressIndex = this.pipeline.indexOf(progressStep.getAttribute('data-step'))
       progressStep.classList.remove('active', 'completed')
 
-      if (stepNum === step) {
+      if (progressIndex === stepIndex) {
         progressStep.classList.add('active')
-      } else if (stepNum < step) {
+      } else if (progressIndex < stepIndex) {
         progressStep.classList.add('completed')
       }
     })
@@ -448,29 +512,26 @@ export class PaymentForm {
 
     window.scrollTo({ top: 0, behavior: 'smooth' })
 
-    // Analytics: step views and key checkout events
-    const stepMap = { 1: 'order_summary', 2: 'customer_info', 3: 'payment_info', 4: 'processing' }
+    // Analytics
     this.trackEvent('payment_form_step_viewed', {
-      step,
-      step_name: stepMap[step] || 'unknown',
+      step: stepIndex,
+      step_name: step,
       domain: this.config.domain,
       currency: this.config.currency
     })
 
     // When payment step is shown, mark begin_checkout (GA4 recommendation)
-    if (step === 3) {
+    if (step === 'payment') {
       const value = this.orderTotals?.total || 0
       this.trackEvent('begin_checkout', {
         value,
         currency: this.config.currency,
-        items: [
-          {
-            item_id: this.config.domain,
-            item_name: 'Domain Registration',
-            price: value,
-            quantity: 1
-          }
-        ]
+        items: this.config.items.map((item) => ({
+          item_id: item.name,
+          item_name: item.type + ' ' + item.action,
+          price: item.unitPrice * item.years,
+          quantity: 1
+        }))
       })
     }
   }
@@ -479,7 +540,7 @@ export class PaymentForm {
     e.preventDefault()
 
     // Validate payment step fields
-    if (!this.validateStep(3)) {
+    if (!this.validateStep('payment')) {
       return
     }
 
@@ -498,18 +559,16 @@ export class PaymentForm {
       value: apValue,
       currency: this.config.currency,
       coupon: discountCode || undefined,
-      items: [
-        {
-          item_id: this.config.domain,
-          item_name: 'Domain Registration',
-          price: apValue,
-          quantity: 1
-        }
-      ]
+      items: this.config.items.map((item) => ({
+        item_id: item.name,
+        item_name: item.type + ' ' + item.action,
+        price: item.unitPrice * item.years,
+        quantity: 1
+      }))
     })
 
-    // Move to status step and kick off simulated flow
-    this.goToStep(4)
+    // Move to processing step and kick off simulated flow
+    this.goToStep('processing')
     await this.processPaymentFlow()
   }
 

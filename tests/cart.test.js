@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { computeCartTotals, normalizeItems } from '../src/cart.js'
+import { computeCartTotals, normalizeItems, renderCartHTML, renderCartTotalsHTML } from '../src/cart.js'
 
 describe('normalizeItems', () => {
   it('converts legacy single-domain options into a one-item array', () => {
@@ -123,5 +123,54 @@ describe('computeCartTotals', () => {
     assert.equal(totals.tax, 0.9)
     assert.equal(totals.fees, 1.5)
     assert.equal(totals.total, 14.4)
+  })
+})
+
+describe('renderCartHTML', () => {
+  it('renders a single item with correct structure', () => {
+    const html = renderCartHTML([
+      { type: 'domain', action: 'registration', name: 'example.ng', years: 1, unitPrice: 12, taxRate: 0.075, feeAmount: 1.5 }
+    ], '$')
+
+    assert.ok(html.includes('example.ng'))
+    assert.ok(html.includes('Domain'))
+    assert.ok(html.includes('$12.00'))
+    assert.ok(html.includes('cart-year-select'))
+    // Single item: remove button should be disabled
+    assert.ok(html.includes('disabled'))
+  })
+
+  it('renders multiple items with remove buttons enabled', () => {
+    const html = renderCartHTML([
+      { type: 'domain', name: 'a.ng', years: 1, unitPrice: 10, taxRate: 0, feeAmount: 0 },
+      { type: 'email', name: 'mail@a.ng', years: 1, unitPrice: 5, taxRate: 0, feeAmount: 0 }
+    ], '$')
+
+    assert.ok(html.includes('a.ng'))
+    assert.ok(html.includes('mail@a.ng'))
+    assert.ok(html.includes('Domain'))
+    assert.ok(html.includes('Email'))
+    // Multiple items: remove buttons should NOT be disabled
+    assert.ok(!html.includes('disabled'))
+  })
+
+  it('shows correct price for multi-year items', () => {
+    const html = renderCartHTML([
+      { type: 'domain', name: 'test.ng', years: 3, unitPrice: 10, taxRate: 0, feeAmount: 0 }
+    ], '₦')
+
+    assert.ok(html.includes('₦30.00'))
+  })
+})
+
+describe('renderCartTotalsHTML', () => {
+  it('renders totals with correct values', () => {
+    const html = renderCartTotalsHTML({ subtotal: 20, tax: 1.5, fees: 1.5, total: 23 }, '$')
+
+    assert.ok(html.includes('$20.00'))
+    assert.ok(html.includes('$1.50'))
+    assert.ok(html.includes('$23.00'))
+    assert.ok(html.includes('Subtotal'))
+    assert.ok(html.includes('Total'))
   })
 })
