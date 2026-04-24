@@ -1,9 +1,11 @@
 import { countries } from './countries.js'
+import { computeCartTotals, renderCartHTML, renderCartTotalsHTML } from './cart.js'
 
 export class PaymentForm {
   constructor (rootElement = document, options = {}) {
     this.root = rootElement
-    this.currentStep = 1
+    this.pipeline = ['cart', 'customer', 'payment', 'processing']
+    this.currentStep = 'cart'
     this.formData = {}
     this.config = {
       // domain, currency are required, do not render form without them.
@@ -13,6 +15,9 @@ export class PaymentForm {
       taxesRate: typeof options.taxesRate === 'number' ? options.taxesRate : 0.075,
       feeAmount: typeof options.feeAmount === 'number' ? options.feeAmount : 1.5,
       customer: options.customer || {},
+      items: options.items || [],
+      paymentStyle: options.paymentStyle || 'inline',
+      transactionType: options.transactionType || 'registration',
       // theme: 'light' | 'dark' | 'system' (default)
       theme: (() => {
         const t = typeof options.theme === 'string' ? options.theme.trim().toLowerCase() : undefined
@@ -33,8 +38,11 @@ export class PaymentForm {
     this.populateCountries()
 
     // Initialize UI state
+    this.renderProgressBar()
     this.prefillCustomerInfo()
+    this.renderCart()
     this.computeAndRenderOrderSummary()
+    this.applyWording()
     // Analytics: mark form viewed if gtag is available
     this.trackEvent && this.trackEvent('payment_form_viewed', {
       domain: this.config.domain,
@@ -58,17 +66,17 @@ export class PaymentForm {
   }
 
   initEventListeners() {
-    const next1 = this.getElement('#next-step-1')
-    if (next1) next1.addEventListener('click', () => this.validateAndNextStep(1))
+    const nextCart = this.getElement('#next-step-cart')
+    if (nextCart) nextCart.addEventListener('click', () => this.nextStep())
 
-    const next2 = this.getElement('#next-step-2')
-    if (next2) next2.addEventListener('click', () => this.validateAndNextStep(2))
+    const nextCustomer = this.getElement('#next-step-customer')
+    if (nextCustomer) nextCustomer.addEventListener('click', () => this.validateAndNextStep('customer'))
 
-    const prev1 = this.getElement('#prev-step-1')
-    if (prev1) prev1.addEventListener('click', () => this.goToStep(1))
+    const prevCustomer = this.getElement('#prev-step-customer')
+    if (prevCustomer) prevCustomer.addEventListener('click', () => this.prevStep())
 
-    const prev2 = this.getElement('#prev-step-2')
-    if (prev2) prev2.addEventListener('click', () => this.goToStep(2))
+    const prevPayment = this.getElement('#prev-step-payment')
+    if (prevPayment) prevPayment.addEventListener('click', () => this.prevStep())
 
     const formEl = this.getElement('#payment-form')
     if (formEl) formEl.addEventListener('submit', (e) => this.handleSubmit(e))
@@ -136,6 +144,41 @@ export class PaymentForm {
     return map[code] || code + ' '
   }
 
+  getPrimaryAction() {
+    const actions = new Set(this.config.items.map((i) => i.action || 'registration'))
+    if (actions.size > 1) return 'mixed'
+    if (actions.size === 1) return [...actions][0]
+    return this.config.transactionType || 'registration'
+  }
+
+  getWording() {
+    const action = this.getPrimaryAction()
+    const hasMultipleTypes = new Set(this.config.items.map((i) => i.type)).size > 1
+    const primaryType = this.config.items.length > 0 ? this.config.items[0].type : 'domain'
+
+    const actionLabels = {
+      registration: { submit: 'Register Now', processing: 'Processing registration', successHeading: 'Registration complete', successMessage: 'Your registration was successful.' },
+      renewal: { submit: 'Renew Now', processing: 'Processing renewal', successHeading: 'Renewal complete', successMessage: 'Your renewal was successful.' },
+      transfer: { submit: 'Transfer Now', processing: 'Processing transfer', successHeading: 'Transfer initiated', successMessage: 'Your transfer has been initiated.' },
+      mixed: { submit: 'Pay Now', processing: 'Processing your order', successHeading: 'Order complete', successMessage: 'Your order was successful.' }
+    }
+
+    const processingSteps = {
+      registration: ['Verifying payment', 'Setting up user account', 'Acquiring domain', 'Sending confirmation email', 'Setting up DNS records', 'Putting the finishing touches'],
+      renewal: ['Verifying payment', 'Extending registration', 'Updating DNS records', 'Sending confirmation email', 'Putting the finishing touches'],
+      transfer: ['Verifying payment', 'Initiating domain transfer', 'Verifying transfer eligibility', 'Sending transfer confirmation', 'Putting the finishing touches'],
+      mixed: ['Verifying payment', 'Processing items', 'Sending confirmation email', 'Putting the finishing touches']
+    }
+
+    const label = actionLabels[action] || actionLabels.registration
+    const steps = processingSteps[action] || processingSteps.registration
+
+    // If cart has mixed types, use generic wording
+    const itemDescription = hasMultipleTypes ? 'items' : primaryType
+
+    return { ...label, processingSteps: steps, itemDescription }
+  }
+
   prefillCustomerInfo() {
     const { name, email, phone } = this.config.customer || {}
 
@@ -158,21 +201,63 @@ export class PaymentForm {
   }
 
   computeAndRenderOrderSummary() {
-    const subtotal = Number(this.config.basePrice)
-    const tax = Math.round(subtotal * this.config.taxesRate * 100) / 100
-    const fees = Math.round(this.config.feeAmount * 100) / 100
-    const total = Math.round((subtotal + tax + fees) * 100) / 100
+    this.orderTotals = computeCartTotals(this.config.items)
+    const totalsEl = this.getElement('#cart-totals')
+    if (totalsEl) {
+      totalsEl.innerHTML = renderCartTotalsHTML(this.orderTotals, this.currencySymbol)
+    }
+  }
 
-    this.orderTotals = { subtotal, tax, fees, total }
+  renderCart() {
+    const container = this.getElement('#cart-items')
+    if (!container) return
 
-    const fmt = (n) => `${this.currencySymbol}${n.toFixed(2)}`
+    container.innerHTML = renderCartHTML(this.config.items, this.currencySymbol)
 
-    const domainEl = this.getElement('#order-domain')
-    const periodEl = this.getElement('#order-period')
-    const totalEl = this.getElement('#order-total')
-    if (domainEl) domainEl.textContent = this.config.domain
-    if (periodEl) periodEl.textContent = '1 year'
-    if (totalEl) totalEl.textContent = fmt(total)
+    // Wire up year selectors
+    container.querySelectorAll('.cart-year-select').forEach((select) => {
+      select.addEventListener('change', (e) => {
+        const index = parseInt(e.target.dataset.index)
+        this.config.items[index].years = parseInt(e.target.value)
+        this.renderCart()
+        this.computeAndRenderOrderSummary()
+      })
+    })
+
+    // Wire up remove buttons
+    container.querySelectorAll('.cart-remove-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index)
+        if (this.config.items.length <= 1) return
+        this.config.items.splice(index, 1)
+        this.renderCart()
+        this.computeAndRenderOrderSummary()
+      })
+    })
+  }
+
+  setItems(items) {
+    this.config.items = items
+    this.renderCart()
+    this.computeAndRenderOrderSummary()
+  }
+
+  renderProgressBar() {
+    const bar = this.getElement('.progress-bar')
+    if (!bar) return
+    bar.innerHTML = this.pipeline
+      .map((name) => `<div class="progress-step${name === this.currentStep ? ' active' : ''}" data-step="${name}"></div>`)
+      .join('')
+  }
+
+  applyWording() {
+    const wording = this.getWording()
+
+    const submitText = this.getElement('#submit-text')
+    if (submitText) submitText.textContent = wording.submit
+
+    const processingHeading = this.getElement('#processing-heading')
+    if (processingHeading) processingHeading.textContent = wording.processing
   }
 
   setupCardFormatting() {
@@ -332,8 +417,7 @@ export class PaymentForm {
   }
 
   getFieldsForStep(step) {
-    // Step 1 (Order) has no required inputs
-    if (step === 2) {
+    if (step === 'customer') {
       return [
         'full-name',
         'email',
@@ -343,7 +427,7 @@ export class PaymentForm {
         'zip',
         'country'
       ]
-    } else if (step === 3) {
+    } else if (step === 'payment') {
       const fields = [
         'card-number',
         'expiry-date',
@@ -370,6 +454,7 @@ export class PaymentForm {
       order: {
         domain: this.config.domain,
         currency: this.config.currency,
+        items: this.config.items,
         discountCode,
         totals: this.orderTotals
       },
@@ -408,36 +493,63 @@ export class PaymentForm {
   }
 
   validateAndNextStep(currentStep) {
-    // Step 1 has no validation
-    if (currentStep === 1) {
-      this.collectFormData()
-      this.goToStep(2)
-      return
-    }
     if (this.validateStep(currentStep)) {
       this.collectFormData()
-      this.goToStep(currentStep + 1)
+      this.nextStep()
     }
   }
 
-  goToStep(step) {
-    // Skip customer info step if fully provided
-    if (step === 2 && this.skipCustomerStep) {
-      step = 3
+  nextStep() {
+    const currentIndex = this.pipeline.indexOf(this.currentStep)
+    if (currentIndex < 0 || currentIndex >= this.pipeline.length - 1) return
+
+    let nextName = this.pipeline[currentIndex + 1]
+
+    // Skip customer step if fully prefilled
+    if (nextName === 'customer' && this.skipCustomerStep) {
+      const skipIndex = currentIndex + 2
+      if (skipIndex < this.pipeline.length) {
+        nextName = this.pipeline[skipIndex]
+      }
     }
+
+    this.collectFormData()
+    this.goToStep(nextName)
+  }
+
+  prevStep() {
+    const currentIndex = this.pipeline.indexOf(this.currentStep)
+    if (currentIndex <= 0) return
+
+    let prevName = this.pipeline[currentIndex - 1]
+
+    // Skip customer step backward if fully prefilled
+    if (prevName === 'customer' && this.skipCustomerStep) {
+      const skipIndex = currentIndex - 2
+      if (skipIndex >= 0) {
+        prevName = this.pipeline[skipIndex]
+      }
+    }
+
+    this.goToStep(prevName)
+  }
+
+  goToStep(step) {
     this.root.querySelectorAll('.form-step').forEach(stepEl => {
       stepEl.classList.remove('active')
     })
 
-    this.root.querySelector(`.form-step[data-step="${step}"]`).classList.add('active')
+    const targetStep = this.root.querySelector(`.form-step[data-step="${step}"]`)
+    if (targetStep) targetStep.classList.add('active')
 
+    const stepIndex = this.pipeline.indexOf(step)
     this.root.querySelectorAll('.progress-step').forEach(progressStep => {
-      const stepNum = parseInt(progressStep.getAttribute('data-step'))
+      const progressIndex = this.pipeline.indexOf(progressStep.getAttribute('data-step'))
       progressStep.classList.remove('active', 'completed')
 
-      if (stepNum === step) {
+      if (progressIndex === stepIndex) {
         progressStep.classList.add('active')
-      } else if (stepNum < step) {
+      } else if (progressIndex < stepIndex) {
         progressStep.classList.add('completed')
       }
     })
@@ -446,29 +558,26 @@ export class PaymentForm {
 
     window.scrollTo({ top: 0, behavior: 'smooth' })
 
-    // Analytics: step views and key checkout events
-    const stepMap = { 1: 'order_summary', 2: 'customer_info', 3: 'payment_info', 4: 'processing' }
+    // Analytics
     this.trackEvent('payment_form_step_viewed', {
-      step,
-      step_name: stepMap[step] || 'unknown',
+      step: stepIndex,
+      step_name: step,
       domain: this.config.domain,
       currency: this.config.currency
     })
 
     // When payment step is shown, mark begin_checkout (GA4 recommendation)
-    if (step === 3) {
+    if (step === 'payment') {
       const value = this.orderTotals?.total || 0
       this.trackEvent('begin_checkout', {
         value,
         currency: this.config.currency,
-        items: [
-          {
-            item_id: this.config.domain,
-            item_name: 'Domain Registration',
-            price: value,
-            quantity: 1
-          }
-        ]
+        items: this.config.items.map((item) => ({
+          item_id: item.name,
+          item_name: item.type + ' ' + item.action,
+          price: item.unitPrice * item.years,
+          quantity: 1
+        }))
       })
     }
   }
@@ -477,7 +586,7 @@ export class PaymentForm {
     e.preventDefault()
 
     // Validate payment step fields
-    if (!this.validateStep(3)) {
+    if (!this.validateStep('payment')) {
       return
     }
 
@@ -496,18 +605,16 @@ export class PaymentForm {
       value: apValue,
       currency: this.config.currency,
       coupon: discountCode || undefined,
-      items: [
-        {
-          item_id: this.config.domain,
-          item_name: 'Domain Registration',
-          price: apValue,
-          quantity: 1
-        }
-      ]
+      items: this.config.items.map((item) => ({
+        item_id: item.name,
+        item_name: item.type + ' ' + item.action,
+        price: item.unitPrice * item.years,
+        quantity: 1
+      }))
     })
 
-    // Move to status step and kick off simulated flow
-    this.goToStep(4)
+    // Move to processing step and kick off simulated flow
+    this.goToStep('processing')
     await this.processPaymentFlow()
   }
 
@@ -536,15 +643,9 @@ export class PaymentForm {
     await new Promise((resolve) => setTimeout(resolve, 1200))
     this.trackEvent('payment_milestone', { milestone: 'charge_succeeded' })
 
-    // 4) Finalize and register domain (~15s) with rolling statuses
-    const steps = [
-      'Verifying payment',
-      'Setting up user account',
-      'Acquiring domain',
-      'Sending confirmation email',
-      'Setting up DNS records',
-      'Putting the finishing touches'
-    ]
+    // 4) Finalize order (~15s) with rolling statuses
+    const wording = this.getWording()
+    const steps = wording.processingSteps
     const perStep = 15000 / steps.length
     for (const s of steps) {
       setStatus(s + '...')
@@ -557,20 +658,21 @@ export class PaymentForm {
 
     // Success summary
     const txnId = 'txn_' + Math.random().toString(36).slice(2, 10)
+    const years = this.config.items.length > 0 ? this.config.items[0].years : 1
     const statusContainer = this.getElement('#status-content')
     if (statusContainer) {
       statusContainer.innerHTML = `
         <div class="confirmation-icon" aria-hidden="true">✓</div>
-        <h2>Payment complete</h2>
-        <p>Your domain purchase was successful.</p>
+        <h2>${wording.successHeading}</h2>
+        <p>${wording.successMessage}</p>
         <div class="summary-section">
           <div class="summary-item">
-            <span class="summary-label">Domain</span>
-            <span class="summary-value">${this.config.domain}</span>
+            <span class="summary-label">${wording.itemDescription === 'items' ? 'Items' : wording.itemDescription.charAt(0).toUpperCase() + wording.itemDescription.slice(1)}</span>
+            <span class="summary-value">${this.config.items.map((i) => i.name).join(', ')}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Period</span>
-            <span class="summary-value">1 year</span>
+            <span class="summary-value">${years === 1 ? '1 year' : years + ' years'}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Amount</span>
@@ -601,14 +703,12 @@ export class PaymentForm {
       value,
       currency: this.config.currency,
       coupon: coupon || undefined,
-      items: [
-        {
-          item_id: this.config.domain,
-          item_name: 'Domain Registration',
-          price: value,
-          quantity: 1
-        }
-      ]
+      items: this.config.items.map((item) => ({
+        item_id: item.name,
+        item_name: item.type + ' ' + item.action,
+        price: item.unitPrice * item.years,
+        quantity: 1
+      }))
     })
   }
 
