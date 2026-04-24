@@ -151,4 +151,75 @@ describe('PaymentForm (DOM integration)', () => {
     const progressSteps = document.querySelectorAll('.progress-step')
     assert.equal(progressSteps.length, 4) // cart, customer, payment, processing
   })
+
+  it('shows "Register Now" button for registration action', () => {
+    createForm({
+      items: [
+        { type: 'domain', action: 'registration', name: 'test.ng', unitPrice: 12, taxRate: 0, feeAmount: 0, years: 1 }
+      ]
+    })
+
+    const submitText = document.getElementById('submit-text')
+    assert.equal(submitText.textContent, 'Register Now')
+  })
+
+  it('shows "Renew Now" button for renewal action', () => {
+    createForm({
+      items: [
+        { type: 'domain', action: 'renewal', name: 'test.ng', unitPrice: 12, taxRate: 0, feeAmount: 0, years: 1 }
+      ]
+    })
+
+    const submitText = document.getElementById('submit-text')
+    assert.equal(submitText.textContent, 'Renew Now')
+  })
+
+  it('shows "Transfer Now" button for transfer action', () => {
+    createForm({
+      items: [
+        { type: 'domain', action: 'transfer', name: 'test.ng', unitPrice: 12, taxRate: 0, feeAmount: 0, years: 1 }
+      ]
+    })
+
+    const submitText = document.getElementById('submit-text')
+    assert.equal(submitText.textContent, 'Transfer Now')
+  })
+
+  it('shows action badges in cart items', () => {
+    createForm({
+      items: [
+        { type: 'domain', action: 'registration', name: 'new.ng', unitPrice: 12, taxRate: 0, feeAmount: 0, years: 1 },
+        { type: 'domain', action: 'renewal', name: 'old.ng', unitPrice: 10, taxRate: 0, feeAmount: 0, years: 1 }
+      ]
+    })
+
+    const cartItems = document.getElementById('cart-items')
+    assert.ok(cartItems.innerHTML.includes('New'))
+    assert.ok(cartItems.innerHTML.includes('Renewal'))
+    assert.ok(cartItems.innerHTML.includes('cart-action-registration'))
+    assert.ok(cartItems.innerHTML.includes('cart-action-renewal'))
+  })
+
+  it('shows "Pay Now" button for mixed actions', () => {
+    createForm({
+      items: [
+        { type: 'domain', action: 'registration', name: 'new.ng', unitPrice: 12, taxRate: 0, feeAmount: 0, years: 1 },
+        { type: 'domain', action: 'renewal', name: 'old.ng', unitPrice: 10, taxRate: 0, feeAmount: 0, years: 1 }
+      ]
+    })
+
+    const submitText = document.getElementById('submit-text')
+    assert.equal(submitText.textContent, 'Pay Now')
+  })
+
+  it('updates processing heading based on transaction type', () => {
+    createForm({
+      items: [
+        { type: 'domain', action: 'transfer', name: 'test.ng', unitPrice: 12, taxRate: 0, feeAmount: 0, years: 1 }
+      ]
+    })
+
+    const heading = document.getElementById('processing-heading')
+    assert.equal(heading.textContent, 'Processing transfer')
+  })
 })

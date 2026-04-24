@@ -544,6 +544,33 @@ button:focus {
   background-color: #198754;
 }
 
+.cart-action-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.cart-action-registration {
+  color: #198754;
+  border-color: #198754;
+}
+
+.cart-action-renewal {
+  color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.cart-action-transfer {
+  color: #fd7e14;
+  border-color: #fd7e14;
+}
+
 .cart-item-controls {
   display: flex;
   align-items: center;

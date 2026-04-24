@@ -42,6 +42,7 @@ export class PaymentForm {
     this.prefillCustomerInfo()
     this.renderCart()
     this.computeAndRenderOrderSummary()
+    this.applyWording()
     // Analytics: mark form viewed if gtag is available
     this.trackEvent && this.trackEvent('payment_form_viewed', {
       domain: this.config.domain,
@@ -143,6 +144,41 @@ export class PaymentForm {
     return map[code] || code + ' '
   }
 
+  getPrimaryAction() {
+    const actions = new Set(this.config.items.map((i) => i.action || 'registration'))
+    if (actions.size > 1) return 'mixed'
+    if (actions.size === 1) return [...actions][0]
+    return this.config.transactionType || 'registration'
+  }
+
+  getWording() {
+    const action = this.getPrimaryAction()
+    const hasMultipleTypes = new Set(this.config.items.map((i) => i.type)).size > 1
+    const primaryType = this.config.items.length > 0 ? this.config.items[0].type : 'domain'
+
+    const actionLabels = {
+      registration: { submit: 'Register Now', processing: 'Processing registration', successHeading: 'Registration complete', successMessage: 'Your registration was successful.' },
+      renewal: { submit: 'Renew Now', processing: 'Processing renewal', successHeading: 'Renewal complete', successMessage: 'Your renewal was successful.' },
+      transfer: { submit: 'Transfer Now', processing: 'Processing transfer', successHeading: 'Transfer initiated', successMessage: 'Your transfer has been initiated.' },
+      mixed: { submit: 'Pay Now', processing: 'Processing your order', successHeading: 'Order complete', successMessage: 'Your order was successful.' }
+    }
+
+    const processingSteps = {
+      registration: ['Verifying payment', 'Setting up user account', 'Acquiring domain', 'Sending confirmation email', 'Setting up DNS records', 'Putting the finishing touches'],
+      renewal: ['Verifying payment', 'Extending registration', 'Updating DNS records', 'Sending confirmation email', 'Putting the finishing touches'],
+      transfer: ['Verifying payment', 'Initiating domain transfer', 'Verifying transfer eligibility', 'Sending transfer confirmation', 'Putting the finishing touches'],
+      mixed: ['Verifying payment', 'Processing items', 'Sending confirmation email', 'Putting the finishing touches']
+    }
+
+    const label = actionLabels[action] || actionLabels.registration
+    const steps = processingSteps[action] || processingSteps.registration
+
+    // If cart has mixed types, use generic wording
+    const itemDescription = hasMultipleTypes ? 'items' : primaryType
+
+    return { ...label, processingSteps: steps, itemDescription }
+  }
+
   prefillCustomerInfo() {
     const { name, email, phone } = this.config.customer || {}
 
@@ -212,6 +248,16 @@ export class PaymentForm {
     bar.innerHTML = this.pipeline
       .map((name) => `<div class="progress-step${name === this.currentStep ? ' active' : ''}" data-step="${name}"></div>`)
       .join('')
+  }
+
+  applyWording() {
+    const wording = this.getWording()
+
+    const submitText = this.getElement('#submit-text')
+    if (submitText) submitText.textContent = wording.submit
+
+    const processingHeading = this.getElement('#processing-heading')
+    if (processingHeading) processingHeading.textContent = wording.processing
   }
 
   setupCardFormatting() {
@@ -597,15 +643,9 @@ export class PaymentForm {
     await new Promise((resolve) => setTimeout(resolve, 1200))
     this.trackEvent('payment_milestone', { milestone: 'charge_succeeded' })
 
-    // 4) Finalize and register domain (~15s) with rolling statuses
-    const steps = [
-      'Verifying payment',
-      'Setting up user account',
-      'Acquiring domain',
-      'Sending confirmation email',
-      'Setting up DNS records',
-      'Putting the finishing touches'
-    ]
+    // 4) Finalize order (~15s) with rolling statuses
+    const wording = this.getWording()
+    const steps = wording.processingSteps
     const perStep = 15000 / steps.length
     for (const s of steps) {
       setStatus(s + '...')
@@ -623,12 +663,12 @@ export class PaymentForm {
     if (statusContainer) {
       statusContainer.innerHTML = `
         <div class="confirmation-icon" aria-hidden="true">✓</div>
-        <h2>Payment complete</h2>
-        <p>Your domain purchase was successful.</p>
+        <h2>${wording.successHeading}</h2>
+        <p>${wording.successMessage}</p>
         <div class="summary-section">
           <div class="summary-item">
-            <span class="summary-label">Domain</span>
-            <span class="summary-value">${this.config.domain}</span>
+            <span class="summary-label">${wording.itemDescription === 'items' ? 'Items' : wording.itemDescription.charAt(0).toUpperCase() + wording.itemDescription.slice(1)}</span>
+            <span class="summary-value">${this.config.items.map((i) => i.name).join(', ')}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Period</span>

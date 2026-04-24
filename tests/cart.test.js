@@ -134,6 +134,8 @@ describe('renderCartHTML', () => {
 
     assert.ok(html.includes('example.ng'))
     assert.ok(html.includes('Domain'))
+    assert.ok(html.includes('New')) // action badge for registration
+    assert.ok(html.includes('cart-action-registration'))
     assert.ok(html.includes('$12.00'))
     assert.ok(html.includes('cart-year-select'))
     // Single item: remove button should be disabled
