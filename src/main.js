@@ -1,5 +1,6 @@
 import formTemplate from './payment-form.html'
 import { PaymentForm } from './payment-form.js'
+import { normalizeItems } from './cart.js'
 import styles from './style.css'
 
 const TEMPLATE = document.createElement('template')
@@ -11,6 +12,18 @@ export class PaymentFormElement extends HTMLElement {
     this.paymentForm = null
     this.isInitialized = false
     this.shadow = this.attachShadow({ mode: 'open' })
+  }
+
+  // JS property setter: el.items = [{ type: 'domain', ... }]
+  set items(value) {
+    this._items = Array.isArray(value) ? value : undefined
+    if (this.isInitialized && this.paymentForm) {
+      this.render()
+    }
+  }
+
+  get items() {
+    return this._items
   }
 
   connectedCallback() {
@@ -70,6 +83,41 @@ export class PaymentFormElement extends HTMLElement {
     const taxesRate = attr('taxes-rate') ? Number(attr('taxes-rate')) : undefined
     const feeAmount = attr('fee-amount') ? Number(attr('fee-amount')) : undefined
 
+    // New attributes for Phase 1
+    const paymentStyleRaw = dataAttr('payment-style') || attr('payment-style') || undefined
+    const transactionTypeRaw = dataAttr('transaction-type') || attr('transaction-type') || undefined
+
+    let paymentStyle
+    if (typeof paymentStyleRaw === 'string') {
+      const ps = paymentStyleRaw.trim().toLowerCase()
+      if (ps === 'inline' || ps === 'external') paymentStyle = ps
+    }
+
+    let transactionType
+    if (typeof transactionTypeRaw === 'string') {
+      const tt = transactionTypeRaw.trim().toLowerCase()
+      if (tt === 'registration' || tt === 'renewal' || tt === 'transfer') transactionType = tt
+    }
+
+    // Parse items from JSON attribute or JS property
+    let items
+    const itemsRaw = dataAttr('items') || attr('items')
+    if (itemsRaw) {
+      try {
+        items = JSON.parse(itemsRaw)
+      } catch {
+        // eslint-disable-next-line no-console
+        console.warn('[PaymentFormElement] Invalid JSON in items attribute.')
+      }
+    }
+    // JS property takes priority over HTML attribute
+    if (this._items) {
+      items = this._items
+    }
+
+    // Checkout API endpoint for external payment
+    const checkoutApi = dataAttr('checkout-api') || attr('checkout-api') || undefined
+
     let theme
     if (typeof themeRaw === 'string') {
       const t = themeRaw.trim().toLowerCase()
@@ -77,7 +125,16 @@ export class PaymentFormElement extends HTMLElement {
       else if (t === 'system' || t === 'system-default') theme = 'system'
     }
 
-    return { domain, currency, customer, basePrice, taxesRate, feeAmount, theme }
+    // Normalize into items array (backward compat)
+    const normalizedItems = normalizeItems({ items, domain, basePrice, taxesRate, feeAmount, transactionType })
+
+    return { domain, currency, customer, basePrice, taxesRate, feeAmount, theme, items: normalizedItems, paymentStyle, transactionType, checkoutApi }
+  }
+
+  completePayment(result) {
+    if (this.paymentForm) {
+      this.paymentForm.completePayment(result)
+    }
   }
 
 }
