@@ -276,4 +276,65 @@ describe('PaymentForm (DOM integration)', () => {
     const content = document.getElementById('status-content')
     assert.ok(content.innerHTML.includes('txn_abc123'))
   })
+
+  it('includes post-checkout steps in pipeline when enabled', () => {
+    const form = createForm({ postCheckout: true })
+
+    assert.deepEqual(form.pipeline, ['cart', 'customer', 'payment', 'processing', 'next-steps', 'intent', 'upsell'])
+  })
+
+  it('does not include post-checkout steps when disabled', () => {
+    const form = createForm()
+
+    assert.deepEqual(form.pipeline, ['cart', 'customer', 'payment', 'processing'])
+  })
+
+  it('renders next-steps content when navigating to that step', () => {
+    const form = createForm({
+      postCheckout: true,
+      items: [
+        { type: 'domain', action: 'registration', name: 'test.ng', unitPrice: 12, taxRate: 0, feeAmount: 0, years: 1 }
+      ]
+    })
+
+    form.goToStep('next-steps')
+
+    assert.equal(form.currentStep, 'next-steps')
+    const content = document.getElementById('next-steps-content')
+    assert.ok(content.innerHTML.includes('test.ng'))
+    assert.ok(content.innerHTML.includes('Set up your domain'))
+  })
+
+  it('renders intent question when navigating to intent step', () => {
+    const form = createForm({ postCheckout: true })
+
+    form.goToStep('intent')
+
+    assert.equal(form.currentStep, 'intent')
+    const content = document.getElementById('intent-content')
+    assert.ok(content.innerHTML.includes('intent-purpose'))
+    assert.ok(content.innerHTML.includes('Personal website'))
+  })
+
+  it('renders upsell cards when navigating to upsell step', () => {
+    const form = createForm({
+      postCheckout: true,
+      items: [
+        { type: 'domain', action: 'registration', name: 'test.ng', unitPrice: 12, taxRate: 0, feeAmount: 0, years: 1 }
+      ]
+    })
+
+    form.goToStep('upsell')
+
+    assert.equal(form.currentStep, 'upsell')
+    const content = document.getElementById('upsell-content')
+    assert.ok(content.innerHTML.includes('upsell-card'))
+    assert.ok(content.innerHTML.includes('Add to order'))
+  })
+
+  it('external payment with post-checkout has correct pipeline', () => {
+    const form = createForm({ paymentStyle: 'external', postCheckout: true })
+
+    assert.deepEqual(form.pipeline, ['cart', 'customer', 'redirect', 'processing', 'next-steps', 'intent', 'upsell'])
+  })
 })

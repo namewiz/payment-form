@@ -222,6 +222,57 @@
       </div>
     </div>
 
+    <!-- Step: Next Steps (post-checkout) -->
+    <div class="form-step" data-step="next-steps">
+      <div class="post-checkout-content">
+        <div class="post-checkout-icon" aria-hidden="true">&#10003;</div>
+        <h2>What to do next</h2>
+        <p>Here's how to get started with your purchase.</p>
+        <div id="next-steps-content">
+          <!-- Next steps cards rendered by JS -->
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-primary" id="next-step-nextsteps">
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step: Intent (post-checkout) -->
+    <div class="form-step" data-step="intent">
+      <div class="post-checkout-content" id="intent-content">
+        <!-- Intent question rendered by JS -->
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" id="skip-intent">
+          Skip
+        </button>
+        <button type="button" class="btn-primary" id="submit-intent">
+          Continue
+        </button>
+      </div>
+    </div>
+
+    <!-- Step: Upsell (post-checkout) -->
+    <div class="form-step" data-step="upsell">
+      <div class="post-checkout-content">
+        <h2>You might also like</h2>
+        <p>Special offers based on your purchase.</p>
+        <div class="upsell-grid" id="upsell-content">
+          <!-- Upsell cards rendered by JS -->
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="skip-upsell">
+            No thanks
+          </button>
+          <button type="button" class="btn-primary" id="done-upsell">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Step: Status / Processing -->
     <div class="form-step" data-step="processing">
       <div class="confirmation-content" id="status-content">

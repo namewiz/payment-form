@@ -691,6 +691,247 @@ button:focus {
   }
 }
 
+/* Post-checkout styles */
+.post-checkout-content {
+  text-align: center;
+}
+
+.post-checkout-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.post-checkout-content p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.post-checkout-icon {
+  width: 4rem;
+  height: 4rem;
+  background-color: var(--success-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: white;
+  font-size: 2rem;
+}
+
+/* Next steps cards */
+.next-step-card {
+  text-align: left;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.next-step-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.next-step-item-name {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.next-step-list {
+  padding-left: 1.25rem;
+  margin: 0;
+}
+
+.next-step-list li {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  padding: 0.25rem 0;
+  line-height: 1.4;
+}
+
+/* Intent question styles */
+.intent-section {
+  text-align: center;
+}
+
+.intent-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.intent-section p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.intent-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.intent-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.intent-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.intent-option {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+  margin-bottom: 0;
+  font-weight: 400;
+}
+
+.intent-option:hover {
+  border-color: var(--button-primary);
+  background-color: var(--bg-secondary);
+}
+
+.intent-option input[type="radio"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.intent-option-text {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+/* Upsell card styles */
+.upsell-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.upsell-card {
+  text-align: left;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.upsell-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.upsell-type-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  color: white;
+}
+
+.upsell-type-domain {
+  background-color: #0d6efd;
+}
+
+.upsell-type-email {
+  background-color: #6f42c1;
+}
+
+.upsell-type-hosting {
+  background-color: #198754;
+}
+
+.upsell-discount-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.upsell-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  word-break: break-all;
+}
+
+.upsell-description {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  flex: 1;
+}
+
+.upsell-pricing {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.upsell-original-price {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+.upsell-discount-price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--success-color);
+}
+
+.upsell-period {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.upsell-add-btn {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.upsell-empty {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+@media (max-width: 500px) {
+  .upsell-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .loading-spinner {
   border: 3px solid var(--border-color);
   border-top: 3px solid var(--button-primary);

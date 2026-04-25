@@ -222,6 +222,57 @@ var S=`<div class="payment-form-container">
       </div>
     </div>
 
+    <!-- Step: Next Steps (post-checkout) -->
+    <div class="form-step" data-step="next-steps">
+      <div class="post-checkout-content">
+        <div class="post-checkout-icon" aria-hidden="true">&#10003;</div>
+        <h2>What to do next</h2>
+        <p>Here's how to get started with your purchase.</p>
+        <div id="next-steps-content">
+          <!-- Next steps cards rendered by JS -->
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-primary" id="next-step-nextsteps">
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step: Intent (post-checkout) -->
+    <div class="form-step" data-step="intent">
+      <div class="post-checkout-content" id="intent-content">
+        <!-- Intent question rendered by JS -->
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" id="skip-intent">
+          Skip
+        </button>
+        <button type="button" class="btn-primary" id="submit-intent">
+          Continue
+        </button>
+      </div>
+    </div>
+
+    <!-- Step: Upsell (post-checkout) -->
+    <div class="form-step" data-step="upsell">
+      <div class="post-checkout-content">
+        <h2>You might also like</h2>
+        <p>Special offers based on your purchase.</p>
+        <div class="upsell-grid" id="upsell-content">
+          <!-- Upsell cards rendered by JS -->
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" id="skip-upsell">
+            No thanks
+          </button>
+          <button type="button" class="btn-primary" id="done-upsell">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Step: Status / Processing -->
     <div class="form-step" data-step="processing">
       <div class="confirmation-content" id="status-content">
@@ -238,21 +289,21 @@ var S=`<div class="payment-form-container">
     </div>
   </form>
 </div>
-`;var E=[{code:"AF",name:"Afghanistan"},{code:"AX",name:"\xC5land Islands"},{code:"AL",name:"Albania"},{code:"DZ",name:"Algeria"},{code:"AS",name:"American Samoa"},{code:"AD",name:"Andorra"},{code:"AO",name:"Angola"},{code:"AI",name:"Anguilla"},{code:"AQ",name:"Antarctica"},{code:"AG",name:"Antigua and Barbuda"},{code:"AR",name:"Argentina"},{code:"AM",name:"Armenia"},{code:"AW",name:"Aruba"},{code:"AU",name:"Australia"},{code:"AT",name:"Austria"},{code:"AZ",name:"Azerbaijan"},{code:"BS",name:"Bahamas"},{code:"BH",name:"Bahrain"},{code:"BD",name:"Bangladesh"},{code:"BB",name:"Barbados"},{code:"BY",name:"Belarus"},{code:"BE",name:"Belgium"},{code:"BZ",name:"Belize"},{code:"BJ",name:"Benin"},{code:"BM",name:"Bermuda"},{code:"BT",name:"Bhutan"},{code:"BO",name:"Bolivia"},{code:"BQ",name:"Bonaire, Sint Eustatius and Saba"},{code:"BA",name:"Bosnia and Herzegovina"},{code:"BW",name:"Botswana"},{code:"BV",name:"Bouvet Island"},{code:"BR",name:"Brazil"},{code:"IO",name:"British Indian Ocean Territory"},{code:"BN",name:"Brunei Darussalam"},{code:"BG",name:"Bulgaria"},{code:"BF",name:"Burkina Faso"},{code:"BI",name:"Burundi"},{code:"CV",name:"Cabo Verde"},{code:"KH",name:"Cambodia"},{code:"CM",name:"Cameroon"},{code:"CA",name:"Canada"},{code:"KY",name:"Cayman Islands"},{code:"CF",name:"Central African Republic"},{code:"TD",name:"Chad"},{code:"CL",name:"Chile"},{code:"CN",name:"China"},{code:"CX",name:"Christmas Island"},{code:"CC",name:"Cocos (Keeling) Islands"},{code:"CO",name:"Colombia"},{code:"KM",name:"Comoros"},{code:"CG",name:"Congo"},{code:"CD",name:"Congo, Democratic Republic of the"},{code:"CK",name:"Cook Islands"},{code:"CR",name:"Costa Rica"},{code:"CI",name:"C\xF4te d'Ivoire"},{code:"HR",name:"Croatia"},{code:"CU",name:"Cuba"},{code:"CW",name:"Cura\xE7ao"},{code:"CY",name:"Cyprus"},{code:"CZ",name:"Czechia"},{code:"DK",name:"Denmark"},{code:"DJ",name:"Djibouti"},{code:"DM",name:"Dominica"},{code:"DO",name:"Dominican Republic"},{code:"EC",name:"Ecuador"},{code:"EG",name:"Egypt"},{code:"SV",name:"El Salvador"},{code:"GQ",name:"Equatorial Guinea"},{code:"ER",name:"Eritrea"},{code:"EE",name:"Estonia"},{code:"SZ",name:"Eswatini"},{code:"ET",name:"Ethiopia"},{code:"FK",name:"Falkland Islands (Malvinas)"},{code:"FO",name:"Faroe Islands"},{code:"FJ",name:"Fiji"},{code:"FI",name:"Finland"},{code:"FR",name:"France"},{code:"GF",name:"French Guiana"},{code:"PF",name:"French Polynesia"},{code:"TF",name:"French Southern Territories"},{code:"GA",name:"Gabon"},{code:"GM",name:"Gambia"},{code:"GE",name:"Georgia"},{code:"DE",name:"Germany"},{code:"GH",name:"Ghana"},{code:"GI",name:"Gibraltar"},{code:"GR",name:"Greece"},{code:"GL",name:"Greenland"},{code:"GD",name:"Grenada"},{code:"GP",name:"Guadeloupe"},{code:"GU",name:"Guam"},{code:"GT",name:"Guatemala"},{code:"GG",name:"Guernsey"},{code:"GN",name:"Guinea"},{code:"GW",name:"Guinea-Bissau"},{code:"GY",name:"Guyana"},{code:"HT",name:"Haiti"},{code:"HM",name:"Heard Island and McDonald Islands"},{code:"VA",name:"Holy See"},{code:"HN",name:"Honduras"},{code:"HK",name:"Hong Kong"},{code:"HU",name:"Hungary"},{code:"IS",name:"Iceland"},{code:"IN",name:"India"},{code:"ID",name:"Indonesia"},{code:"IR",name:"Iran"},{code:"IQ",name:"Iraq"},{code:"IE",name:"Ireland"},{code:"IM",name:"Isle of Man"},{code:"IL",name:"Israel"},{code:"IT",name:"Italy"},{code:"JM",name:"Jamaica"},{code:"JP",name:"Japan"},{code:"JE",name:"Jersey"},{code:"JO",name:"Jordan"},{code:"KZ",name:"Kazakhstan"},{code:"KE",name:"Kenya"},{code:"KI",name:"Kiribati"},{code:"KP",name:"Korea, Democratic People's Republic of"},{code:"KR",name:"Korea, Republic of"},{code:"XK",name:"Kosovo"},{code:"KW",name:"Kuwait"},{code:"KG",name:"Kyrgyzstan"},{code:"LA",name:"Lao People's Democratic Republic"},{code:"LV",name:"Latvia"},{code:"LB",name:"Lebanon"},{code:"LS",name:"Lesotho"},{code:"LR",name:"Liberia"},{code:"LY",name:"Libya"},{code:"LI",name:"Liechtenstein"},{code:"LT",name:"Lithuania"},{code:"LU",name:"Luxembourg"},{code:"MO",name:"Macao"},{code:"MG",name:"Madagascar"},{code:"MW",name:"Malawi"},{code:"MY",name:"Malaysia"},{code:"MV",name:"Maldives"},{code:"ML",name:"Mali"},{code:"MT",name:"Malta"},{code:"MH",name:"Marshall Islands"},{code:"MQ",name:"Martinique"},{code:"MR",name:"Mauritania"},{code:"MU",name:"Mauritius"},{code:"YT",name:"Mayotte"},{code:"MX",name:"Mexico"},{code:"FM",name:"Micronesia"},{code:"MD",name:"Moldova"},{code:"MC",name:"Monaco"},{code:"MN",name:"Mongolia"},{code:"ME",name:"Montenegro"},{code:"MS",name:"Montserrat"},{code:"MA",name:"Morocco"},{code:"MZ",name:"Mozambique"},{code:"MM",name:"Myanmar"},{code:"NA",name:"Namibia"},{code:"NR",name:"Nauru"},{code:"NP",name:"Nepal"},{code:"NL",name:"Netherlands"},{code:"NC",name:"New Caledonia"},{code:"NZ",name:"New Zealand"},{code:"NI",name:"Nicaragua"},{code:"NE",name:"Niger"},{code:"NG",name:"Nigeria"},{code:"NU",name:"Niue"},{code:"NF",name:"Norfolk Island"},{code:"MK",name:"North Macedonia"},{code:"MP",name:"Northern Mariana Islands"},{code:"NO",name:"Norway"},{code:"OM",name:"Oman"},{code:"PK",name:"Pakistan"},{code:"PW",name:"Palau"},{code:"PS",name:"Palestine, State of"},{code:"PA",name:"Panama"},{code:"PG",name:"Papua New Guinea"},{code:"PY",name:"Paraguay"},{code:"PE",name:"Peru"},{code:"PH",name:"Philippines"},{code:"PN",name:"Pitcairn"},{code:"PL",name:"Poland"},{code:"PT",name:"Portugal"},{code:"PR",name:"Puerto Rico"},{code:"QA",name:"Qatar"},{code:"RE",name:"R\xE9union"},{code:"RO",name:"Romania"},{code:"RU",name:"Russian Federation"},{code:"RW",name:"Rwanda"},{code:"BL",name:"Saint Barth\xE9lemy"},{code:"SH",name:"Saint Helena, Ascension and Tristan da Cunha"},{code:"KN",name:"Saint Kitts and Nevis"},{code:"LC",name:"Saint Lucia"},{code:"MF",name:"Saint Martin (French part)"},{code:"PM",name:"Saint Pierre and Miquelon"},{code:"VC",name:"Saint Vincent and the Grenadines"},{code:"WS",name:"Samoa"},{code:"SM",name:"San Marino"},{code:"ST",name:"Sao Tome and Principe"},{code:"SA",name:"Saudi Arabia"},{code:"SN",name:"Senegal"},{code:"RS",name:"Serbia"},{code:"SC",name:"Seychelles"},{code:"SL",name:"Sierra Leone"},{code:"SG",name:"Singapore"},{code:"SX",name:"Sint Maarten (Dutch part)"},{code:"SK",name:"Slovakia"},{code:"SI",name:"Slovenia"},{code:"SB",name:"Solomon Islands"},{code:"SO",name:"Somalia"},{code:"ZA",name:"South Africa"},{code:"GS",name:"South Georgia and the South Sandwich Islands"},{code:"SS",name:"South Sudan"},{code:"ES",name:"Spain"},{code:"LK",name:"Sri Lanka"},{code:"SD",name:"Sudan"},{code:"SR",name:"Suriname"},{code:"SJ",name:"Svalbard and Jan Mayen"},{code:"SE",name:"Sweden"},{code:"CH",name:"Switzerland"},{code:"SY",name:"Syrian Arab Republic"},{code:"TW",name:"Taiwan"},{code:"TJ",name:"Tajikistan"},{code:"TZ",name:"Tanzania"},{code:"TH",name:"Thailand"},{code:"TL",name:"Timor-Leste"},{code:"TG",name:"Togo"},{code:"TK",name:"Tokelau"},{code:"TO",name:"Tonga"},{code:"TT",name:"Trinidad and Tobago"},{code:"TN",name:"Tunisia"},{code:"TR",name:"Turkey"},{code:"TM",name:"Turkmenistan"},{code:"TC",name:"Turks and Caicos Islands"},{code:"TV",name:"Tuvalu"},{code:"UG",name:"Uganda"},{code:"UA",name:"Ukraine"},{code:"AE",name:"United Arab Emirates"},{code:"GB",name:"United Kingdom"},{code:"US",name:"United States"},{code:"UM",name:"United States Minor Outlying Islands"},{code:"UY",name:"Uruguay"},{code:"UZ",name:"Uzbekistan"},{code:"VU",name:"Vanuatu"},{code:"VE",name:"Venezuela"},{code:"VN",name:"Viet Nam"},{code:"VG",name:"Virgin Islands (British)"},{code:"VI",name:"Virgin Islands (U.S.)"},{code:"WF",name:"Wallis and Futuna"},{code:"EH",name:"Western Sahara"},{code:"YE",name:"Yemen"},{code:"ZM",name:"Zambia"},{code:"ZW",name:"Zimbabwe"}];function C(c={}){return Array.isArray(c.items)&&c.items.length>0?c.items.map(e=>({type:e.type||"domain",action:e.action||"registration",name:e.name||"",years:typeof e.years=="number"&&e.years>=1?e.years:1,unitPrice:typeof e.unitPrice=="number"?e.unitPrice:0,taxRate:typeof e.taxRate=="number"?e.taxRate:0,feeAmount:typeof e.feeAmount=="number"?e.feeAmount:0})):[{type:"domain",action:"registration",name:c.domain||"",years:1,unitPrice:typeof c.basePrice=="number"?c.basePrice:12,taxRate:typeof c.taxesRate=="number"?c.taxesRate:.075,feeAmount:typeof c.feeAmount=="number"?c.feeAmount:1.5}]}function k(c,e){let t=o=>`${e}${o.toFixed(2)}`,r={domain:"Domain",email:"Email",hosting:"Hosting"},a={registration:"New",renewal:"Renewal",transfer:"Transfer"},n=c.length>1;return c.map((o,l)=>{let d=o.unitPrice*o.years,p=r[o.type]||o.type,g=a[o.action]||o.action,s=[1,2,3,4,5].map(u=>`<option value="${u}"${u===o.years?" selected":""}>${u} ${u===1?"year":"years"}</option>`).join("");return`
-      <div class="cart-item" data-index="${l}">
+`;var k=[{code:"AF",name:"Afghanistan"},{code:"AX",name:"\xC5land Islands"},{code:"AL",name:"Albania"},{code:"DZ",name:"Algeria"},{code:"AS",name:"American Samoa"},{code:"AD",name:"Andorra"},{code:"AO",name:"Angola"},{code:"AI",name:"Anguilla"},{code:"AQ",name:"Antarctica"},{code:"AG",name:"Antigua and Barbuda"},{code:"AR",name:"Argentina"},{code:"AM",name:"Armenia"},{code:"AW",name:"Aruba"},{code:"AU",name:"Australia"},{code:"AT",name:"Austria"},{code:"AZ",name:"Azerbaijan"},{code:"BS",name:"Bahamas"},{code:"BH",name:"Bahrain"},{code:"BD",name:"Bangladesh"},{code:"BB",name:"Barbados"},{code:"BY",name:"Belarus"},{code:"BE",name:"Belgium"},{code:"BZ",name:"Belize"},{code:"BJ",name:"Benin"},{code:"BM",name:"Bermuda"},{code:"BT",name:"Bhutan"},{code:"BO",name:"Bolivia"},{code:"BQ",name:"Bonaire, Sint Eustatius and Saba"},{code:"BA",name:"Bosnia and Herzegovina"},{code:"BW",name:"Botswana"},{code:"BV",name:"Bouvet Island"},{code:"BR",name:"Brazil"},{code:"IO",name:"British Indian Ocean Territory"},{code:"BN",name:"Brunei Darussalam"},{code:"BG",name:"Bulgaria"},{code:"BF",name:"Burkina Faso"},{code:"BI",name:"Burundi"},{code:"CV",name:"Cabo Verde"},{code:"KH",name:"Cambodia"},{code:"CM",name:"Cameroon"},{code:"CA",name:"Canada"},{code:"KY",name:"Cayman Islands"},{code:"CF",name:"Central African Republic"},{code:"TD",name:"Chad"},{code:"CL",name:"Chile"},{code:"CN",name:"China"},{code:"CX",name:"Christmas Island"},{code:"CC",name:"Cocos (Keeling) Islands"},{code:"CO",name:"Colombia"},{code:"KM",name:"Comoros"},{code:"CG",name:"Congo"},{code:"CD",name:"Congo, Democratic Republic of the"},{code:"CK",name:"Cook Islands"},{code:"CR",name:"Costa Rica"},{code:"CI",name:"C\xF4te d'Ivoire"},{code:"HR",name:"Croatia"},{code:"CU",name:"Cuba"},{code:"CW",name:"Cura\xE7ao"},{code:"CY",name:"Cyprus"},{code:"CZ",name:"Czechia"},{code:"DK",name:"Denmark"},{code:"DJ",name:"Djibouti"},{code:"DM",name:"Dominica"},{code:"DO",name:"Dominican Republic"},{code:"EC",name:"Ecuador"},{code:"EG",name:"Egypt"},{code:"SV",name:"El Salvador"},{code:"GQ",name:"Equatorial Guinea"},{code:"ER",name:"Eritrea"},{code:"EE",name:"Estonia"},{code:"SZ",name:"Eswatini"},{code:"ET",name:"Ethiopia"},{code:"FK",name:"Falkland Islands (Malvinas)"},{code:"FO",name:"Faroe Islands"},{code:"FJ",name:"Fiji"},{code:"FI",name:"Finland"},{code:"FR",name:"France"},{code:"GF",name:"French Guiana"},{code:"PF",name:"French Polynesia"},{code:"TF",name:"French Southern Territories"},{code:"GA",name:"Gabon"},{code:"GM",name:"Gambia"},{code:"GE",name:"Georgia"},{code:"DE",name:"Germany"},{code:"GH",name:"Ghana"},{code:"GI",name:"Gibraltar"},{code:"GR",name:"Greece"},{code:"GL",name:"Greenland"},{code:"GD",name:"Grenada"},{code:"GP",name:"Guadeloupe"},{code:"GU",name:"Guam"},{code:"GT",name:"Guatemala"},{code:"GG",name:"Guernsey"},{code:"GN",name:"Guinea"},{code:"GW",name:"Guinea-Bissau"},{code:"GY",name:"Guyana"},{code:"HT",name:"Haiti"},{code:"HM",name:"Heard Island and McDonald Islands"},{code:"VA",name:"Holy See"},{code:"HN",name:"Honduras"},{code:"HK",name:"Hong Kong"},{code:"HU",name:"Hungary"},{code:"IS",name:"Iceland"},{code:"IN",name:"India"},{code:"ID",name:"Indonesia"},{code:"IR",name:"Iran"},{code:"IQ",name:"Iraq"},{code:"IE",name:"Ireland"},{code:"IM",name:"Isle of Man"},{code:"IL",name:"Israel"},{code:"IT",name:"Italy"},{code:"JM",name:"Jamaica"},{code:"JP",name:"Japan"},{code:"JE",name:"Jersey"},{code:"JO",name:"Jordan"},{code:"KZ",name:"Kazakhstan"},{code:"KE",name:"Kenya"},{code:"KI",name:"Kiribati"},{code:"KP",name:"Korea, Democratic People's Republic of"},{code:"KR",name:"Korea, Republic of"},{code:"XK",name:"Kosovo"},{code:"KW",name:"Kuwait"},{code:"KG",name:"Kyrgyzstan"},{code:"LA",name:"Lao People's Democratic Republic"},{code:"LV",name:"Latvia"},{code:"LB",name:"Lebanon"},{code:"LS",name:"Lesotho"},{code:"LR",name:"Liberia"},{code:"LY",name:"Libya"},{code:"LI",name:"Liechtenstein"},{code:"LT",name:"Lithuania"},{code:"LU",name:"Luxembourg"},{code:"MO",name:"Macao"},{code:"MG",name:"Madagascar"},{code:"MW",name:"Malawi"},{code:"MY",name:"Malaysia"},{code:"MV",name:"Maldives"},{code:"ML",name:"Mali"},{code:"MT",name:"Malta"},{code:"MH",name:"Marshall Islands"},{code:"MQ",name:"Martinique"},{code:"MR",name:"Mauritania"},{code:"MU",name:"Mauritius"},{code:"YT",name:"Mayotte"},{code:"MX",name:"Mexico"},{code:"FM",name:"Micronesia"},{code:"MD",name:"Moldova"},{code:"MC",name:"Monaco"},{code:"MN",name:"Mongolia"},{code:"ME",name:"Montenegro"},{code:"MS",name:"Montserrat"},{code:"MA",name:"Morocco"},{code:"MZ",name:"Mozambique"},{code:"MM",name:"Myanmar"},{code:"NA",name:"Namibia"},{code:"NR",name:"Nauru"},{code:"NP",name:"Nepal"},{code:"NL",name:"Netherlands"},{code:"NC",name:"New Caledonia"},{code:"NZ",name:"New Zealand"},{code:"NI",name:"Nicaragua"},{code:"NE",name:"Niger"},{code:"NG",name:"Nigeria"},{code:"NU",name:"Niue"},{code:"NF",name:"Norfolk Island"},{code:"MK",name:"North Macedonia"},{code:"MP",name:"Northern Mariana Islands"},{code:"NO",name:"Norway"},{code:"OM",name:"Oman"},{code:"PK",name:"Pakistan"},{code:"PW",name:"Palau"},{code:"PS",name:"Palestine, State of"},{code:"PA",name:"Panama"},{code:"PG",name:"Papua New Guinea"},{code:"PY",name:"Paraguay"},{code:"PE",name:"Peru"},{code:"PH",name:"Philippines"},{code:"PN",name:"Pitcairn"},{code:"PL",name:"Poland"},{code:"PT",name:"Portugal"},{code:"PR",name:"Puerto Rico"},{code:"QA",name:"Qatar"},{code:"RE",name:"R\xE9union"},{code:"RO",name:"Romania"},{code:"RU",name:"Russian Federation"},{code:"RW",name:"Rwanda"},{code:"BL",name:"Saint Barth\xE9lemy"},{code:"SH",name:"Saint Helena, Ascension and Tristan da Cunha"},{code:"KN",name:"Saint Kitts and Nevis"},{code:"LC",name:"Saint Lucia"},{code:"MF",name:"Saint Martin (French part)"},{code:"PM",name:"Saint Pierre and Miquelon"},{code:"VC",name:"Saint Vincent and the Grenadines"},{code:"WS",name:"Samoa"},{code:"SM",name:"San Marino"},{code:"ST",name:"Sao Tome and Principe"},{code:"SA",name:"Saudi Arabia"},{code:"SN",name:"Senegal"},{code:"RS",name:"Serbia"},{code:"SC",name:"Seychelles"},{code:"SL",name:"Sierra Leone"},{code:"SG",name:"Singapore"},{code:"SX",name:"Sint Maarten (Dutch part)"},{code:"SK",name:"Slovakia"},{code:"SI",name:"Slovenia"},{code:"SB",name:"Solomon Islands"},{code:"SO",name:"Somalia"},{code:"ZA",name:"South Africa"},{code:"GS",name:"South Georgia and the South Sandwich Islands"},{code:"SS",name:"South Sudan"},{code:"ES",name:"Spain"},{code:"LK",name:"Sri Lanka"},{code:"SD",name:"Sudan"},{code:"SR",name:"Suriname"},{code:"SJ",name:"Svalbard and Jan Mayen"},{code:"SE",name:"Sweden"},{code:"CH",name:"Switzerland"},{code:"SY",name:"Syrian Arab Republic"},{code:"TW",name:"Taiwan"},{code:"TJ",name:"Tajikistan"},{code:"TZ",name:"Tanzania"},{code:"TH",name:"Thailand"},{code:"TL",name:"Timor-Leste"},{code:"TG",name:"Togo"},{code:"TK",name:"Tokelau"},{code:"TO",name:"Tonga"},{code:"TT",name:"Trinidad and Tobago"},{code:"TN",name:"Tunisia"},{code:"TR",name:"Turkey"},{code:"TM",name:"Turkmenistan"},{code:"TC",name:"Turks and Caicos Islands"},{code:"TV",name:"Tuvalu"},{code:"UG",name:"Uganda"},{code:"UA",name:"Ukraine"},{code:"AE",name:"United Arab Emirates"},{code:"GB",name:"United Kingdom"},{code:"US",name:"United States"},{code:"UM",name:"United States Minor Outlying Islands"},{code:"UY",name:"Uruguay"},{code:"UZ",name:"Uzbekistan"},{code:"VU",name:"Vanuatu"},{code:"VE",name:"Venezuela"},{code:"VN",name:"Viet Nam"},{code:"VG",name:"Virgin Islands (British)"},{code:"VI",name:"Virgin Islands (U.S.)"},{code:"WF",name:"Wallis and Futuna"},{code:"EH",name:"Western Sahara"},{code:"YE",name:"Yemen"},{code:"ZM",name:"Zambia"},{code:"ZW",name:"Zimbabwe"}];function E(c={}){return Array.isArray(c.items)&&c.items.length>0?c.items.map(e=>({type:e.type||"domain",action:e.action||"registration",name:e.name||"",years:typeof e.years=="number"&&e.years>=1?e.years:1,unitPrice:typeof e.unitPrice=="number"?e.unitPrice:0,taxRate:typeof e.taxRate=="number"?e.taxRate:0,feeAmount:typeof e.feeAmount=="number"?e.feeAmount:0})):[{type:"domain",action:"registration",name:c.domain||"",years:1,unitPrice:typeof c.basePrice=="number"?c.basePrice:12,taxRate:typeof c.taxesRate=="number"?c.taxesRate:.075,feeAmount:typeof c.feeAmount=="number"?c.feeAmount:1.5}]}function C(c,e){let t=o=>`${e}${o.toFixed(2)}`,a={domain:"Domain",email:"Email",hosting:"Hosting"},n={registration:"New",renewal:"Renewal",transfer:"Transfer"},r=c.length>1;return c.map((o,d)=>{let l=o.unitPrice*o.years,m=a[o.type]||o.type,h=n[o.action]||o.action,s=[1,2,3,4,5].map(u=>`<option value="${u}"${u===o.years?" selected":""}>${u} ${u===1?"year":"years"}</option>`).join("");return`
+      <div class="cart-item" data-index="${d}">
         <div class="cart-item-info">
-          <span class="cart-type-badge cart-type-${o.type}">${p}</span>
-          <span class="cart-action-badge cart-action-${o.action}">${g}</span>
+          <span class="cart-type-badge cart-type-${o.type}">${m}</span>
+          <span class="cart-action-badge cart-action-${o.action}">${h}</span>
           <span class="cart-item-name">${o.name}</span>
         </div>
         <div class="cart-item-controls">
-          <select class="cart-year-select" data-index="${l}" aria-label="Duration for ${o.name}">
+          <select class="cart-year-select" data-index="${d}" aria-label="Duration for ${o.name}">
             ${s}
           </select>
-          <span class="cart-item-price">${t(d)}</span>
-          <button type="button" class="cart-remove-btn" data-index="${l}" aria-label="Remove ${o.name}"${n?"":" disabled"}>&times;</button>
+          <span class="cart-item-price">${t(l)}</span>
+          <button type="button" class="cart-remove-btn" data-index="${d}" aria-label="Remove ${o.name}"${r?"":" disabled"}>&times;</button>
         </div>
-      </div>`}).join("")}function T(c,e){let t=r=>`${e}${r.toFixed(2)}`;return`
+      </div>`}).join("")}function P(c,e){let t=a=>`${e}${a.toFixed(2)}`;return`
     <div class="cart-totals-row">
       <span>Subtotal</span>
       <span>${t(c.subtotal)}</span>
@@ -268,37 +319,104 @@ var S=`<div class="payment-form-container">
     <div class="cart-totals-row cart-totals-total">
       <span>Total</span>
       <span>${t(c.total)}</span>
-    </div>`}function P(c){let e=0,t=0,r=0;for(let n of c){let i=n.unitPrice*n.years,o=i*n.taxRate,l=n.feeAmount;e+=i,t+=o,r+=l}e=Math.round(e*100)/100,t=Math.round(t*100)/100,r=Math.round(r*100)/100;let a=Math.round((e+t+r)*100)/100;return{subtotal:e,tax:t,fees:r,total:a}}var f=class{constructor(e=document,t={}){if(this.root=e,this.currentStep="cart",this.formData={},this.config={domain:typeof t.domain=="string"&&t.domain.trim()?t.domain.trim():void 0,currency:typeof t.currency=="string"&&t.currency.trim()?t.currency.toUpperCase().trim():void 0,basePrice:typeof t.basePrice=="number"?t.basePrice:12,taxesRate:typeof t.taxesRate=="number"?t.taxesRate:.075,feeAmount:typeof t.feeAmount=="number"?t.feeAmount:1.5,customer:t.customer||{},items:t.items||[],paymentStyle:t.paymentStyle||"inline",transactionType:t.transactionType||"registration",checkoutApi:t.checkoutApi||void 0,theme:(()=>{let r=typeof t.theme=="string"?t.theme.trim().toLowerCase():void 0;return r==="light"||r==="dark"?r:"system"})()},!this.config.domain||!this.config.currency)throw new Error("PaymentForm: domain and currency are required configuration options");this.config.paymentStyle==="external"?this.pipeline=["cart","customer","redirect","processing"]:this.pipeline=["cart","customer","payment","processing"],this.currencySymbol=this.getCurrencySymbol(this.config.currency),this.skipCustomerStep=!1,this.initTheme(),this.initEventListeners(),this.populateCountries(),this.renderProgressBar(),this.prefillCustomerInfo(),this.renderCart(),this.computeAndRenderOrderSummary(),this.applyWording(),this.trackEvent&&this.trackEvent("payment_form_viewed",{domain:this.config.domain,currency:this.config.currency})}getElement(e){return this.root?.querySelector(e)}initTheme(){let e=this.root?.host||document.documentElement,t=typeof window<"u"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light",r=this.config.theme==="light"||this.config.theme==="dark"?this.config.theme:t;e.setAttribute("data-theme",r)}initEventListeners(){let e=this.getElement("#next-step-cart");e&&e.addEventListener("click",()=>this.nextStep());let t=this.getElement("#next-step-customer");t&&t.addEventListener("click",()=>this.validateAndNextStep("customer"));let r=this.getElement("#prev-step-customer");r&&r.addEventListener("click",()=>this.prevStep());let a=this.getElement("#prev-step-payment");a&&a.addEventListener("click",()=>this.prevStep());let n=this.getElement("#prev-step-redirect");n&&n.addEventListener("click",()=>this.prevStep());let i=this.getElement("#redirect-pay-btn");i&&i.addEventListener("click",()=>this.handleRedirect());let o=this.getElement("#payment-form");o&&o.addEventListener("submit",d=>this.handleSubmit(d));let l=this.getElement("#separate-billing");l&&l.addEventListener("change",d=>{let p=this.getElement("#billing-address-fields");d.target.checked?(p.classList.add("show"),this.setBillingFieldsRequired(!0)):(p.classList.remove("show"),this.setBillingFieldsRequired(!1),this.clearBillingErrors())}),this.setupCardFormatting()}populateCountries(){let e=this.getElement("#country"),t=this.getElement("#billing-country");if(!e&&!t)return;let a=[{code:"",name:"Select Country"},...E].map(i=>`<option value="${i.code}">${i.name}</option>`).join("");e&&e.options.length===0&&(e.innerHTML=a),t&&t.options.length===0&&(t.innerHTML=a)}gtagAvailable(){return typeof window<"u"&&typeof window.gtag=="function"}trackEvent(e,t={}){if(!this.gtagAvailable())return!1;try{return window.gtag("event",e,t),!0}catch{return!1}}getCurrencySymbol(e){return{USD:"$",EUR:"\u20AC",GBP:"\xA3",NGN:"\u20A6",GHS:"\u20B5",KES:"KSh",ZAR:"R"}[e]||e+" "}getPrimaryAction(){let e=new Set(this.config.items.map(t=>t.action||"registration"));return e.size>1?"mixed":e.size===1?[...e][0]:this.config.transactionType||"registration"}getWording(){let e=this.getPrimaryAction(),t=new Set(this.config.items.map(d=>d.type)).size>1,r=this.config.items.length>0?this.config.items[0].type:"domain",a={registration:{submit:"Register Now",processing:"Processing registration",successHeading:"Registration complete",successMessage:"Your registration was successful."},renewal:{submit:"Renew Now",processing:"Processing renewal",successHeading:"Renewal complete",successMessage:"Your renewal was successful."},transfer:{submit:"Transfer Now",processing:"Processing transfer",successHeading:"Transfer initiated",successMessage:"Your transfer has been initiated."},mixed:{submit:"Pay Now",processing:"Processing your order",successHeading:"Order complete",successMessage:"Your order was successful."}},n={registration:["Verifying payment","Setting up user account","Acquiring domain","Sending confirmation email","Setting up DNS records","Putting the finishing touches"],renewal:["Verifying payment","Extending registration","Updating DNS records","Sending confirmation email","Putting the finishing touches"],transfer:["Verifying payment","Initiating domain transfer","Verifying transfer eligibility","Sending transfer confirmation","Putting the finishing touches"],mixed:["Verifying payment","Processing items","Sending confirmation email","Putting the finishing touches"]},i=a[e]||a.registration,o=n[e]||n.registration;return{...i,processingSteps:o,itemDescription:t?"items":r}}prefillCustomerInfo(){let{name:e,email:t,phone:r}=this.config.customer||{},a=(l,d)=>{let p=this.getElement(l);return!p||d==null||d===""?!1:(p.value=d,p.setAttribute("readonly","readonly"),p.setAttribute("aria-readonly","true"),p.classList.add("prefilled"),!0)},n=a("#full-name",e),i=a("#email",t),o=a("#phone",r);this.skipCustomerStep=!!(n&&i&&o)}computeAndRenderOrderSummary(){this.orderTotals=P(this.config.items);let e=this.getElement("#cart-totals");e&&(e.innerHTML=T(this.orderTotals,this.currencySymbol))}renderCart(){let e=this.getElement("#cart-items");e&&(e.innerHTML=k(this.config.items,this.currencySymbol),e.querySelectorAll(".cart-year-select").forEach(t=>{t.addEventListener("change",r=>{let a=parseInt(r.target.dataset.index);this.config.items[a].years=parseInt(r.target.value),this.renderCart(),this.computeAndRenderOrderSummary()})}),e.querySelectorAll(".cart-remove-btn").forEach(t=>{t.addEventListener("click",r=>{let a=parseInt(r.target.dataset.index);this.config.items.length<=1||(this.config.items.splice(a,1),this.renderCart(),this.computeAndRenderOrderSummary())})}))}setItems(e){this.config.items=e,this.renderCart(),this.computeAndRenderOrderSummary()}renderProgressBar(){let e=this.getElement(".progress-bar");e&&(e.innerHTML=this.pipeline.map(t=>`<div class="progress-step${t===this.currentStep?" active":""}" data-step="${t}"></div>`).join(""))}applyWording(){let e=this.getWording(),t=this.getElement("#submit-text");t&&(t.textContent=e.submit);let r=this.getElement("#processing-heading");r&&(r.textContent=e.processing)}renderRedirectSummary(){let e=this.getElement("#redirect-summary");if(!e)return;let t=a=>`${this.currencySymbol}${a.toFixed(2)}`,r=this.config.items.map(a=>`<div class="summary-item"><span class="summary-label">${a.name}</span><span class="summary-value">${t(a.unitPrice*a.years)}</span></div>`).join("");e.innerHTML=`
-      ${r}
+    </div>`}function L(c){let e=0,t=0,a=0;for(let r of c){let i=r.unitPrice*r.years,o=i*r.taxRate,d=r.feeAmount;e+=i,t+=o,a+=d}e=Math.round(e*100)/100,t=Math.round(t*100)/100,a=Math.round(a*100)/100;let n=Math.round((e+t+a)*100)/100;return{subtotal:e,tax:t,fees:a,total:n}}function M(c){let e={domain:{registration:{title:"Set up your domain",steps:["Point your nameservers to your hosting provider","Configure DNS records (A, CNAME, MX)","Verify domain ownership via email"]},renewal:{title:"Domain renewed",steps:["Your domain registration has been extended","Check that your DNS records are still correct","Update your WHOIS contact info if needed"]},transfer:{title:"Complete your transfer",steps:["Check your email for a transfer confirmation","Provide the authorization/EPP code from your old registrar","Approve the transfer when prompted (can take up to 5 days)"]}},email:{registration:{title:"Set up your email",steps:["Choose your email address (e.g., you@yourdomain.ng)","Set up your email client or use webmail","Add MX records to your domain DNS"]},renewal:{title:"Email renewed",steps:["Your email service has been extended","No changes needed to your existing setup","Check your mailbox storage if you need more space"]}},hosting:{registration:{title:"Set up your hosting",steps:["Access your hosting control panel","Upload your website files or install a CMS","Point your domain nameservers to your hosting"]},renewal:{title:"Hosting renewed",steps:["Your hosting plan has been extended","Check your storage and bandwidth usage","Review your backup schedule"]}}};return c.map(a=>{let n=a.action||"registration",r=e[a.type]||e.domain,i=r[n]||r.registration||{title:"Next steps",steps:["Check your email for further instructions"]},o=i.steps.map(d=>`<li>${d}</li>`).join("");return`
+      <div class="next-step-card">
+        <h3>${i.title}</h3>
+        <p class="next-step-item-name">${a.name}</p>
+        <ol class="next-step-list">${o}</ol>
+      </div>`}).join("")}function A(){return`
+    <div class="intent-section">
+      <h2>Tell us about yourself</h2>
+      <p>This helps us personalize your experience.</p>
+
+      <div class="intent-group">
+        <label class="intent-label">What will you use this for?</label>
+        <div class="intent-options" id="intent-purpose">
+          <label class="intent-option">
+            <input type="radio" name="intent-purpose" value="personal" />
+            <span class="intent-option-text">Personal website</span>
+          </label>
+          <label class="intent-option">
+            <input type="radio" name="intent-purpose" value="business" />
+            <span class="intent-option-text">Business</span>
+          </label>
+          <label class="intent-option">
+            <input type="radio" name="intent-purpose" value="email" />
+            <span class="intent-option-text">Email only</span>
+          </label>
+          <label class="intent-option">
+            <input type="radio" name="intent-purpose" value="development" />
+            <span class="intent-option-text">Development / testing</span>
+          </label>
+          <label class="intent-option">
+            <input type="radio" name="intent-purpose" value="other" />
+            <span class="intent-option-text">Other</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="intent-group">
+        <label class="intent-label">Are you technical?</label>
+        <div class="intent-options" id="intent-technical">
+          <label class="intent-option">
+            <input type="radio" name="intent-technical" value="yes" />
+            <span class="intent-option-text">Yes, I can manage DNS and servers</span>
+          </label>
+          <label class="intent-option">
+            <input type="radio" name="intent-technical" value="somewhat" />
+            <span class="intent-option-text">Somewhat, I know the basics</span>
+          </label>
+          <label class="intent-option">
+            <input type="radio" name="intent-technical" value="no" />
+            <span class="intent-option-text">No, I need guidance</span>
+          </label>
+        </div>
+      </div>
+    </div>`}function T(c){let e=[],t=new Set(c.map(a=>a.name.toLowerCase()));for(let a of c){if(a.type!=="domain")continue;let n=a.name.toLowerCase(),r=n.split(".");if(r.length<2)continue;let i=r[0],o=[{tld:".com.ng",price:8},{tld:".org.ng",price:6},{tld:".ng",price:15},{tld:".com",price:10}];for(let l of o){let m=i+l.tld;t.has(m)||n!==m&&e.push({type:"domain",action:"registration",name:m,description:`Protect your brand with ${l.tld}`,originalPrice:l.price,discountPrice:Math.round(l.price*.8*100)/100,discountPercent:20})}let d=`mail@${n}`;t.has(d)||e.push({type:"email",action:"registration",name:d,description:"Professional email for your domain",originalPrice:5,discountPrice:3.5,discountPercent:30})}return e.slice(0,3)}function I(c,e){if(!c||c.length===0)return'<p class="upsell-empty">No additional offers available right now.</p>';let t=n=>`${e}${n.toFixed(2)}`;return c.map((n,r)=>`
+      <div class="upsell-card" data-index="${r}">
+        <div class="upsell-card-header">
+          <span class="upsell-type-badge upsell-type-${n.type}">${n.type}</span>
+          <span class="upsell-discount-badge">${n.discountPercent}% off</span>
+        </div>
+        <h3 class="upsell-name">${n.name}</h3>
+        <p class="upsell-description">${n.description}</p>
+        <div class="upsell-pricing">
+          <span class="upsell-original-price">${t(n.originalPrice)}</span>
+          <span class="upsell-discount-price">${t(n.discountPrice)}</span>
+          <span class="upsell-period">/year</span>
+        </div>
+        <button type="button" class="btn-primary upsell-add-btn" data-index="${r}">Add to order</button>
+      </div>`).join("")}var b=class{constructor(e=document,t={}){if(this.root=e,this.currentStep="cart",this.formData={},this.config={domain:typeof t.domain=="string"&&t.domain.trim()?t.domain.trim():void 0,currency:typeof t.currency=="string"&&t.currency.trim()?t.currency.toUpperCase().trim():void 0,basePrice:typeof t.basePrice=="number"?t.basePrice:12,taxesRate:typeof t.taxesRate=="number"?t.taxesRate:.075,feeAmount:typeof t.feeAmount=="number"?t.feeAmount:1.5,customer:t.customer||{},items:t.items||[],paymentStyle:t.paymentStyle||"inline",transactionType:t.transactionType||"registration",checkoutApi:t.checkoutApi||void 0,postCheckout:!!t.postCheckout,theme:(()=>{let a=typeof t.theme=="string"?t.theme.trim().toLowerCase():void 0;return a==="light"||a==="dark"?a:"system"})()},!this.config.domain||!this.config.currency)throw new Error("PaymentForm: domain and currency are required configuration options");this.config.paymentStyle==="external"?this.pipeline=["cart","customer","redirect","processing"]:this.pipeline=["cart","customer","payment","processing"],this.config.postCheckout&&this.pipeline.push("next-steps","intent","upsell"),this.currencySymbol=this.getCurrencySymbol(this.config.currency),this.skipCustomerStep=!1,this.initTheme(),this.initEventListeners(),this.populateCountries(),this.renderProgressBar(),this.prefillCustomerInfo(),this.renderCart(),this.computeAndRenderOrderSummary(),this.applyWording(),this.trackEvent&&this.trackEvent("payment_form_viewed",{domain:this.config.domain,currency:this.config.currency})}getElement(e){return this.root?.querySelector(e)}initTheme(){let e=this.root?.host||document.documentElement,t=typeof window<"u"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light",a=this.config.theme==="light"||this.config.theme==="dark"?this.config.theme:t;e.setAttribute("data-theme",a)}initEventListeners(){let e=this.getElement("#next-step-cart");e&&e.addEventListener("click",()=>this.nextStep());let t=this.getElement("#next-step-customer");t&&t.addEventListener("click",()=>this.validateAndNextStep("customer"));let a=this.getElement("#prev-step-customer");a&&a.addEventListener("click",()=>this.prevStep());let n=this.getElement("#prev-step-payment");n&&n.addEventListener("click",()=>this.prevStep());let r=this.getElement("#prev-step-redirect");r&&r.addEventListener("click",()=>this.prevStep());let i=this.getElement("#redirect-pay-btn");i&&i.addEventListener("click",()=>this.handleRedirect());let o=this.getElement("#next-step-nextsteps");o&&o.addEventListener("click",()=>this.nextStep());let d=this.getElement("#skip-intent");d&&d.addEventListener("click",()=>this.nextStep());let l=this.getElement("#submit-intent");l&&l.addEventListener("click",()=>this.handleIntentSubmit());let m=this.getElement("#skip-upsell");m&&m.addEventListener("click",()=>this.closeForm());let h=this.getElement("#done-upsell");h&&h.addEventListener("click",()=>this.closeForm());let s=this.getElement("#payment-form");s&&s.addEventListener("submit",g=>this.handleSubmit(g));let u=this.getElement("#separate-billing");u&&u.addEventListener("change",g=>{let f=this.getElement("#billing-address-fields");g.target.checked?(f.classList.add("show"),this.setBillingFieldsRequired(!0)):(f.classList.remove("show"),this.setBillingFieldsRequired(!1),this.clearBillingErrors())}),this.setupCardFormatting()}populateCountries(){let e=this.getElement("#country"),t=this.getElement("#billing-country");if(!e&&!t)return;let n=[{code:"",name:"Select Country"},...k].map(i=>`<option value="${i.code}">${i.name}</option>`).join("");e&&e.options.length===0&&(e.innerHTML=n),t&&t.options.length===0&&(t.innerHTML=n)}gtagAvailable(){return typeof window<"u"&&typeof window.gtag=="function"}trackEvent(e,t={}){if(!this.gtagAvailable())return!1;try{return window.gtag("event",e,t),!0}catch{return!1}}getCurrencySymbol(e){return{USD:"$",EUR:"\u20AC",GBP:"\xA3",NGN:"\u20A6",GHS:"\u20B5",KES:"KSh",ZAR:"R"}[e]||e+" "}getPrimaryAction(){let e=new Set(this.config.items.map(t=>t.action||"registration"));return e.size>1?"mixed":e.size===1?[...e][0]:this.config.transactionType||"registration"}getWording(){let e=this.getPrimaryAction(),t=new Set(this.config.items.map(l=>l.type)).size>1,a=this.config.items.length>0?this.config.items[0].type:"domain",n={registration:{submit:"Register Now",processing:"Processing registration",successHeading:"Registration complete",successMessage:"Your registration was successful."},renewal:{submit:"Renew Now",processing:"Processing renewal",successHeading:"Renewal complete",successMessage:"Your renewal was successful."},transfer:{submit:"Transfer Now",processing:"Processing transfer",successHeading:"Transfer initiated",successMessage:"Your transfer has been initiated."},mixed:{submit:"Pay Now",processing:"Processing your order",successHeading:"Order complete",successMessage:"Your order was successful."}},r={registration:["Verifying payment","Setting up user account","Acquiring domain","Sending confirmation email","Setting up DNS records","Putting the finishing touches"],renewal:["Verifying payment","Extending registration","Updating DNS records","Sending confirmation email","Putting the finishing touches"],transfer:["Verifying payment","Initiating domain transfer","Verifying transfer eligibility","Sending transfer confirmation","Putting the finishing touches"],mixed:["Verifying payment","Processing items","Sending confirmation email","Putting the finishing touches"]},i=n[e]||n.registration,o=r[e]||r.registration;return{...i,processingSteps:o,itemDescription:t?"items":a}}prefillCustomerInfo(){let{name:e,email:t,phone:a}=this.config.customer||{},n=(d,l)=>{let m=this.getElement(d);return!m||l==null||l===""?!1:(m.value=l,m.setAttribute("readonly","readonly"),m.setAttribute("aria-readonly","true"),m.classList.add("prefilled"),!0)},r=n("#full-name",e),i=n("#email",t),o=n("#phone",a);this.skipCustomerStep=!!(r&&i&&o)}computeAndRenderOrderSummary(){this.orderTotals=L(this.config.items);let e=this.getElement("#cart-totals");e&&(e.innerHTML=P(this.orderTotals,this.currencySymbol))}renderCart(){let e=this.getElement("#cart-items");e&&(e.innerHTML=C(this.config.items,this.currencySymbol),e.querySelectorAll(".cart-year-select").forEach(t=>{t.addEventListener("change",a=>{let n=parseInt(a.target.dataset.index);this.config.items[n].years=parseInt(a.target.value),this.renderCart(),this.computeAndRenderOrderSummary()})}),e.querySelectorAll(".cart-remove-btn").forEach(t=>{t.addEventListener("click",a=>{let n=parseInt(a.target.dataset.index);this.config.items.length<=1||(this.config.items.splice(n,1),this.renderCart(),this.computeAndRenderOrderSummary())})}))}setItems(e){this.config.items=e,this.renderCart(),this.computeAndRenderOrderSummary()}renderProgressBar(){let e=this.getElement(".progress-bar");e&&(e.innerHTML=this.pipeline.map(t=>`<div class="progress-step${t===this.currentStep?" active":""}" data-step="${t}"></div>`).join(""))}applyWording(){let e=this.getWording(),t=this.getElement("#submit-text");t&&(t.textContent=e.submit);let a=this.getElement("#processing-heading");a&&(a.textContent=e.processing)}renderRedirectSummary(){let e=this.getElement("#redirect-summary");if(!e)return;let t=n=>`${this.currencySymbol}${n.toFixed(2)}`,a=this.config.items.map(n=>`<div class="summary-item"><span class="summary-label">${n.name}</span><span class="summary-value">${t(n.unitPrice*n.years)}</span></div>`).join("");e.innerHTML=`
+      ${a}
       <div class="summary-item" style="border-top: 1px solid var(--border-color); margin-top: 0.25rem; padding-top: 0.5rem; font-weight: 600;">
         <span class="summary-label">Total</span>
         <span class="summary-value">${t(this.orderTotals.total)}</span>
-      </div>`}async handleRedirect(){this.collectFormData();let e=this.getElement("#redirect-pay-btn"),t=this.getElement("#redirect-pay-text");if(e&&(e.disabled=!0,e.classList.add("loading")),t&&(t.textContent="Redirecting..."),!this.config.checkoutApi){let r=this.root.host;r&&r.dispatchEvent(new CustomEvent("payment-redirect",{bubbles:!0,detail:this.formData}));return}try{let r={product:{domainName:this.config.domain,domainTransaction:this.config.items[0]?.action==="transfer"?"transfer":"create",addons:{},nameservers:[]},customer:{email:this.formData.userInfo?.email||"",firstName:(this.formData.userInfo?.fullName||"").split(" ")[0]||"",lastName:(this.formData.userInfo?.fullName||"").split(" ").slice(1).join(" ")||"",phone:this.formData.userInfo?.phone||"",address:{street:this.formData.userInfo?.address?.line1||"",city:"",zipcode:this.formData.userInfo?.address?.zip||"",country:this.formData.userInfo?.address?.country||"",state:this.formData.userInfo?.address?.state||""}},currency:this.config.currency,discounts:this.formData.order?.discountCode?[{code:this.formData.order.discountCode}]:[]},a=await fetch(this.config.checkoutApi,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(r)});if(!a.ok)throw new Error("Payment API returned "+a.status);let n=await a.json();if(n.authorizationUrl)window.location.href=n.authorizationUrl;else throw new Error("No redirect URL returned from payment API")}catch{e&&(e.disabled=!1,e.classList.remove("loading")),t&&(t.textContent="Proceed to Payment");let a=this.getElement("#redirect-summary");a&&a.insertAdjacentHTML("beforeend",'<p class="redirect-error">Something went wrong. Please try again.</p>')}}completePayment(e){if(e&&e.success){let t=this.getWording(),r=e.transactionId||"",a=this.config.items.length>0?this.config.items[0].years:1,n=this.getElement("#status-content");n&&(n.innerHTML=`
+      </div>`}async handleRedirect(){this.collectFormData();let e=this.getElement("#redirect-pay-btn"),t=this.getElement("#redirect-pay-text");if(e&&(e.disabled=!0,e.classList.add("loading")),t&&(t.textContent="Redirecting..."),!this.config.checkoutApi){let a=this.root.host;a&&a.dispatchEvent(new CustomEvent("payment-redirect",{bubbles:!0,detail:this.formData}));return}try{let a={product:{domainName:this.config.domain,domainTransaction:this.config.items[0]?.action==="transfer"?"transfer":"create",addons:{},nameservers:[]},customer:{email:this.formData.userInfo?.email||"",firstName:(this.formData.userInfo?.fullName||"").split(" ")[0]||"",lastName:(this.formData.userInfo?.fullName||"").split(" ").slice(1).join(" ")||"",phone:this.formData.userInfo?.phone||"",address:{street:this.formData.userInfo?.address?.line1||"",city:"",zipcode:this.formData.userInfo?.address?.zip||"",country:this.formData.userInfo?.address?.country||"",state:this.formData.userInfo?.address?.state||""}},currency:this.config.currency,discounts:this.formData.order?.discountCode?[{code:this.formData.order.discountCode}]:[]},n=await fetch(this.config.checkoutApi,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(a)});if(!n.ok)throw new Error("Payment API returned "+n.status);let r=await n.json();if(r.authorizationUrl)window.location.href=r.authorizationUrl;else throw new Error("No redirect URL returned from payment API")}catch{e&&(e.disabled=!1,e.classList.remove("loading")),t&&(t.textContent="Proceed to Payment");let n=this.getElement("#redirect-summary");n&&n.insertAdjacentHTML("beforeend",'<p class="redirect-error">Something went wrong. Please try again.</p>')}}completePayment(e){if(e&&e.success){let t=this.getWording(),a=e.transactionId||"",n=this.config.items.length>0?this.config.items[0].years:1,r=this.getElement("#status-content");if(r&&(r.innerHTML=`
           <div class="confirmation-icon" aria-hidden="true">\u2713</div>
           <h2>${t.successHeading}</h2>
           <p>${t.successMessage}</p>
           <div class="summary-section">
             <div class="summary-item">
               <span class="summary-label">${t.itemDescription==="items"?"Items":t.itemDescription.charAt(0).toUpperCase()+t.itemDescription.slice(1)}</span>
-              <span class="summary-value">${this.config.items.map(o=>o.name).join(", ")}</span>
+              <span class="summary-value">${this.config.items.map(i=>i.name).join(", ")}</span>
             </div>
             <div class="summary-item">
               <span class="summary-label">Transaction</span>
-              <span class="summary-value">${r}</span>
+              <span class="summary-value">${a}</span>
             </div>
           </div>
-          <button type="button" class="btn-primary" id="close-payment-form">Close</button>`);let i=this.getElement("#close-payment-form");i&&i.addEventListener("click",()=>this.closeForm()),this.goToStep("processing")}}setupCardFormatting(){let e=this.getElement("#card-number"),t=this.getElement("#expiry-date"),r=this.getElement("#cvc");e.addEventListener("input",n=>{let i=n.target.value.replace(/\s/g,"");i=i.replace(/\D/g,""),i=i.substring(0,16);let o=i.match(/.{1,4}/g)?.join(" ")||i;n.target.value=o}),t.addEventListener("input",n=>{let i=n.target.value.replace(/\D/g,"");i.length>=2&&(i=i.substring(0,2)+"/"+i.substring(2,4)),n.target.value=i}),r.addEventListener("input",n=>{n.target.value=n.target.value.replace(/\D/g,"").substring(0,4)}),this.getElement("#phone").addEventListener("input",n=>{let i=n.target.value.replace(/[^\d+\s()-]/g,"");n.target.value=i})}setBillingFieldsRequired(e){["billing-address-line1","billing-state","billing-zip","billing-country"].forEach(r=>{let a=this.getElement(`#${r}`);e?(a.setAttribute("required","required"),a.setAttribute("aria-required","true")):(a.removeAttribute("required"),a.removeAttribute("aria-required"))})}clearBillingErrors(){["billing-address-line1","billing-state","billing-zip","billing-country"].forEach(t=>{let r=this.getElement(`#${t}`),a=this.getElement(`#${t}-error`);r.classList.remove("error"),a&&a.classList.remove("show")})}validateStep(e){let t=!0;if(this.getFieldsForStep(e).forEach(a=>{let n=this.getElement(`#${a}`),i=this.getElement(`#${a}-error`);if(n.classList.remove("error"),i&&i.classList.remove("show"),n.hasAttribute("required")&&!n.value.trim())t=!1,n.classList.add("error"),i&&i.classList.add("show");else if(n.type==="email"&&n.value.trim())/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(n.value.trim())||(t=!1,n.classList.add("error"),i&&(i.textContent="Please enter a valid email address",i.classList.add("show")));else if(a==="card-number"&&n.value.trim()){let o=n.value.replace(/\s/g,"");(o.length<13||o.length>19)&&(t=!1,n.classList.add("error"),i&&i.classList.add("show"))}else if(a==="expiry-date"&&n.value.trim())if(!/^(0[1-9]|1[0-2])\/\d{2}$/.test(n.value))t=!1,n.classList.add("error"),i&&(i.textContent="Please enter valid expiry (MM/YY)",i.classList.add("show"));else{let[l,d]=n.value.split("/"),p=new Date(2e3+parseInt(d),parseInt(l)-1),g=new Date;g.setDate(1),p<g&&(t=!1,n.classList.add("error"),i&&(i.textContent="Card has expired",i.classList.add("show")))}else a==="cvc"&&n.value.trim()&&(n.value.length<3||n.value.length>4)&&(t=!1,n.classList.add("error"),i&&i.classList.add("show"))}),!t){let a=this.root.querySelector(".error");a&&a.focus()}return t}getFieldsForStep(e){if(e==="customer")return["full-name","email","phone","address-line1","state","zip","country"];if(e==="payment"){let t=["card-number","expiry-date","cvc"],r=this.getElement("#separate-billing");return r&&r.checked&&t.push("billing-address-line1","billing-state","billing-zip","billing-country"),t}return[]}collectFormData(){let e=this.getElement("#discount-code")?.value?.trim()||"";this.formData={order:{domain:this.config.domain,currency:this.config.currency,items:this.config.items,discountCode:e,totals:this.orderTotals},userInfo:{fullName:this.getElement("#full-name").value.trim(),email:this.getElement("#email").value.trim(),phone:this.getElement("#phone").value.trim(),address:{line1:this.getElement("#address-line1").value.trim(),state:this.getElement("#state").value.trim(),zip:this.getElement("#zip").value.trim(),country:this.getElement("#country").value}},paymentInfo:{cardNumber:this.getElement("#card-number").value.replace(/\s/g,""),expiryDate:this.getElement("#expiry-date").value,cvc:this.getElement("#cvc").value}};let t=this.getElement("#separate-billing").checked;t?this.formData.paymentInfo.billingAddress={line1:this.getElement("#billing-address-line1").value.trim(),state:this.getElement("#billing-state").value.trim(),zip:this.getElement("#billing-zip").value.trim(),country:this.getElement("#billing-country").value}:this.formData.paymentInfo.billingAddress=this.formData.userInfo.address,this.formData.paymentInfo.separateBillingAddress=t}validateAndNextStep(e){this.validateStep(e)&&(this.collectFormData(),this.nextStep())}nextStep(){let e=this.pipeline.indexOf(this.currentStep);if(e<0||e>=this.pipeline.length-1)return;let t=this.pipeline[e+1];if(t==="customer"&&this.skipCustomerStep){let r=e+2;r<this.pipeline.length&&(t=this.pipeline[r])}this.collectFormData(),this.goToStep(t)}prevStep(){let e=this.pipeline.indexOf(this.currentStep);if(e<=0)return;let t=this.pipeline[e-1];if(t==="customer"&&this.skipCustomerStep){let r=e-2;r>=0&&(t=this.pipeline[r])}this.goToStep(t)}goToStep(e){this.root.querySelectorAll(".form-step").forEach(a=>{a.classList.remove("active")});let t=this.root.querySelector(`.form-step[data-step="${e}"]`);t&&t.classList.add("active");let r=this.pipeline.indexOf(e);if(this.root.querySelectorAll(".progress-step").forEach(a=>{let n=this.pipeline.indexOf(a.getAttribute("data-step"));a.classList.remove("active","completed"),n===r?a.classList.add("active"):n<r&&a.classList.add("completed")}),this.currentStep=e,window.scrollTo({top:0,behavior:"smooth"}),this.trackEvent("payment_form_step_viewed",{step:r,step_name:e,domain:this.config.domain,currency:this.config.currency}),e==="redirect"&&this.renderRedirectSummary(),e==="payment"||e==="redirect"){let a=this.orderTotals?.total||0;this.trackEvent("begin_checkout",{value:a,currency:this.config.currency,items:this.config.items.map(n=>({item_id:n.name,item_name:n.type+" "+n.action,price:n.unitPrice*n.years,quantity:1}))})}}async handleSubmit(e){if(e.preventDefault(),!this.validateStep("payment"))return;let t=this.getElement("#submit-form"),r=this.getElement("#submit-text");t&&(t.disabled=!0),t&&t.classList.add("loading"),r&&(r.textContent="Processing..."),this.collectFormData();let a=this.orderTotals?.total||0,n=this.formData?.order?.discountCode||"";this.trackEvent("add_payment_info",{payment_type:"card",value:a,currency:this.config.currency,coupon:n||void 0,items:this.config.items.map(i=>({item_id:i.name,item_name:i.type+" "+i.action,price:i.unitPrice*i.years,quantity:1}))}),this.goToStep("processing"),await this.processPaymentFlow()}async processPaymentFlow(){let e=s=>{let u=this.getElement("#status-text");u&&(u.textContent=s)};e("Securing session...");let t=await new Promise(s=>setTimeout(()=>s("recaptcha_dummy_token"),1e3));this.trackEvent("payment_milestone",{milestone:"recaptcha_token_obtained"}),e("Creating payment intent...");let r=await new Promise(s=>setTimeout(()=>s("pi_simulated_"+Math.random().toString(36).slice(2,8)),5e3));this.trackEvent("payment_milestone",{milestone:"payment_intent_created",payment_intent_id:r}),e("Charging card..."),this.trackEvent("payment_milestone",{milestone:"charge_attempt_started"}),await new Promise(s=>setTimeout(s,1200)),this.trackEvent("payment_milestone",{milestone:"charge_succeeded"});let a=this.getWording(),n=a.processingSteps,i=15e3/n.length;for(let s of n)e(s+"..."),await new Promise(u=>setTimeout(u,i)),this.trackEvent("payment_milestone",{milestone:s.toLowerCase().replace(/\s+/g,"_")});let o="txn_"+Math.random().toString(36).slice(2,10),l=this.config.items.length>0?this.config.items[0].years:1,d=this.getElement("#status-content");if(d){d.innerHTML=`
+          ${this.config.postCheckout?'<button type="button" class="btn-primary" id="continue-post-checkout">Continue</button>':'<button type="button" class="btn-primary" id="close-payment-form">Close</button>'}`),this.config.postCheckout){let i=this.getElement("#continue-post-checkout");i&&i.addEventListener("click",()=>this.nextStep())}else{let i=this.getElement("#close-payment-form");i&&i.addEventListener("click",()=>this.closeForm())}this.goToStep("processing")}}setupCardFormatting(){let e=this.getElement("#card-number"),t=this.getElement("#expiry-date"),a=this.getElement("#cvc");e.addEventListener("input",r=>{let i=r.target.value.replace(/\s/g,"");i=i.replace(/\D/g,""),i=i.substring(0,16);let o=i.match(/.{1,4}/g)?.join(" ")||i;r.target.value=o}),t.addEventListener("input",r=>{let i=r.target.value.replace(/\D/g,"");i.length>=2&&(i=i.substring(0,2)+"/"+i.substring(2,4)),r.target.value=i}),a.addEventListener("input",r=>{r.target.value=r.target.value.replace(/\D/g,"").substring(0,4)}),this.getElement("#phone").addEventListener("input",r=>{let i=r.target.value.replace(/[^\d+\s()-]/g,"");r.target.value=i})}setBillingFieldsRequired(e){["billing-address-line1","billing-state","billing-zip","billing-country"].forEach(a=>{let n=this.getElement(`#${a}`);e?(n.setAttribute("required","required"),n.setAttribute("aria-required","true")):(n.removeAttribute("required"),n.removeAttribute("aria-required"))})}clearBillingErrors(){["billing-address-line1","billing-state","billing-zip","billing-country"].forEach(t=>{let a=this.getElement(`#${t}`),n=this.getElement(`#${t}-error`);a.classList.remove("error"),n&&n.classList.remove("show")})}validateStep(e){let t=!0;if(this.getFieldsForStep(e).forEach(n=>{let r=this.getElement(`#${n}`),i=this.getElement(`#${n}-error`);if(r.classList.remove("error"),i&&i.classList.remove("show"),r.hasAttribute("required")&&!r.value.trim())t=!1,r.classList.add("error"),i&&i.classList.add("show");else if(r.type==="email"&&r.value.trim())/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.value.trim())||(t=!1,r.classList.add("error"),i&&(i.textContent="Please enter a valid email address",i.classList.add("show")));else if(n==="card-number"&&r.value.trim()){let o=r.value.replace(/\s/g,"");(o.length<13||o.length>19)&&(t=!1,r.classList.add("error"),i&&i.classList.add("show"))}else if(n==="expiry-date"&&r.value.trim())if(!/^(0[1-9]|1[0-2])\/\d{2}$/.test(r.value))t=!1,r.classList.add("error"),i&&(i.textContent="Please enter valid expiry (MM/YY)",i.classList.add("show"));else{let[d,l]=r.value.split("/"),m=new Date(2e3+parseInt(l),parseInt(d)-1),h=new Date;h.setDate(1),m<h&&(t=!1,r.classList.add("error"),i&&(i.textContent="Card has expired",i.classList.add("show")))}else n==="cvc"&&r.value.trim()&&(r.value.length<3||r.value.length>4)&&(t=!1,r.classList.add("error"),i&&i.classList.add("show"))}),!t){let n=this.root.querySelector(".error");n&&n.focus()}return t}getFieldsForStep(e){if(e==="customer")return["full-name","email","phone","address-line1","state","zip","country"];if(e==="payment"){let t=["card-number","expiry-date","cvc"],a=this.getElement("#separate-billing");return a&&a.checked&&t.push("billing-address-line1","billing-state","billing-zip","billing-country"),t}return[]}collectFormData(){let e=this.getElement("#discount-code")?.value?.trim()||"";this.formData={order:{domain:this.config.domain,currency:this.config.currency,items:this.config.items,discountCode:e,totals:this.orderTotals},userInfo:{fullName:this.getElement("#full-name").value.trim(),email:this.getElement("#email").value.trim(),phone:this.getElement("#phone").value.trim(),address:{line1:this.getElement("#address-line1").value.trim(),state:this.getElement("#state").value.trim(),zip:this.getElement("#zip").value.trim(),country:this.getElement("#country").value}},paymentInfo:{cardNumber:this.getElement("#card-number").value.replace(/\s/g,""),expiryDate:this.getElement("#expiry-date").value,cvc:this.getElement("#cvc").value}};let t=this.getElement("#separate-billing").checked;t?this.formData.paymentInfo.billingAddress={line1:this.getElement("#billing-address-line1").value.trim(),state:this.getElement("#billing-state").value.trim(),zip:this.getElement("#billing-zip").value.trim(),country:this.getElement("#billing-country").value}:this.formData.paymentInfo.billingAddress=this.formData.userInfo.address,this.formData.paymentInfo.separateBillingAddress=t}validateAndNextStep(e){this.validateStep(e)&&(this.collectFormData(),this.nextStep())}nextStep(){let e=this.pipeline.indexOf(this.currentStep);if(e<0||e>=this.pipeline.length-1)return;let t=this.pipeline[e+1];if(t==="customer"&&this.skipCustomerStep){let a=e+2;a<this.pipeline.length&&(t=this.pipeline[a])}this.collectFormData(),this.goToStep(t)}prevStep(){let e=this.pipeline.indexOf(this.currentStep);if(e<=0)return;let t=this.pipeline[e-1];if(t==="customer"&&this.skipCustomerStep){let a=e-2;a>=0&&(t=this.pipeline[a])}this.goToStep(t)}goToStep(e){this.root.querySelectorAll(".form-step").forEach(n=>{n.classList.remove("active")});let t=this.root.querySelector(`.form-step[data-step="${e}"]`);t&&t.classList.add("active");let a=this.pipeline.indexOf(e);if(this.root.querySelectorAll(".progress-step").forEach(n=>{let r=this.pipeline.indexOf(n.getAttribute("data-step"));n.classList.remove("active","completed"),r===a?n.classList.add("active"):r<a&&n.classList.add("completed")}),this.currentStep=e,window.scrollTo({top:0,behavior:"smooth"}),this.trackEvent("payment_form_step_viewed",{step:a,step_name:e,domain:this.config.domain,currency:this.config.currency}),e==="redirect"&&this.renderRedirectSummary(),e==="next-steps"?this.renderNextSteps():e==="intent"?this.renderIntent():e==="upsell"&&this.renderUpsell(),e==="payment"||e==="redirect"){let n=this.orderTotals?.total||0;this.trackEvent("begin_checkout",{value:n,currency:this.config.currency,items:this.config.items.map(r=>({item_id:r.name,item_name:r.type+" "+r.action,price:r.unitPrice*r.years,quantity:1}))})}}async handleSubmit(e){if(e.preventDefault(),!this.validateStep("payment"))return;let t=this.getElement("#submit-form"),a=this.getElement("#submit-text");t&&(t.disabled=!0),t&&t.classList.add("loading"),a&&(a.textContent="Processing..."),this.collectFormData();let n=this.orderTotals?.total||0,r=this.formData?.order?.discountCode||"";this.trackEvent("add_payment_info",{payment_type:"card",value:n,currency:this.config.currency,coupon:r||void 0,items:this.config.items.map(i=>({item_id:i.name,item_name:i.type+" "+i.action,price:i.unitPrice*i.years,quantity:1}))}),this.goToStep("processing"),await this.processPaymentFlow()}async processPaymentFlow(){let e=s=>{let u=this.getElement("#status-text");u&&(u.textContent=s)};e("Securing session...");let t=await new Promise(s=>setTimeout(()=>s("recaptcha_dummy_token"),1e3));this.trackEvent("payment_milestone",{milestone:"recaptcha_token_obtained"}),e("Creating payment intent...");let a=await new Promise(s=>setTimeout(()=>s("pi_simulated_"+Math.random().toString(36).slice(2,8)),5e3));this.trackEvent("payment_milestone",{milestone:"payment_intent_created",payment_intent_id:a}),e("Charging card..."),this.trackEvent("payment_milestone",{milestone:"charge_attempt_started"}),await new Promise(s=>setTimeout(s,1200)),this.trackEvent("payment_milestone",{milestone:"charge_succeeded"});let n=this.getWording(),r=n.processingSteps,i=15e3/r.length;for(let s of r)e(s+"..."),await new Promise(u=>setTimeout(u,i)),this.trackEvent("payment_milestone",{milestone:s.toLowerCase().replace(/\s+/g,"_")});let o="txn_"+Math.random().toString(36).slice(2,10),d=this.config.items.length>0?this.config.items[0].years:1,l=this.getElement("#status-content");if(l)if(l.innerHTML=`
         <div class="confirmation-icon" aria-hidden="true">\u2713</div>
-        <h2>${a.successHeading}</h2>
-        <p>${a.successMessage}</p>
+        <h2>${n.successHeading}</h2>
+        <p>${n.successMessage}</p>
         <div class="summary-section">
           <div class="summary-item">
-            <span class="summary-label">${a.itemDescription==="items"?"Items":a.itemDescription.charAt(0).toUpperCase()+a.itemDescription.slice(1)}</span>
-            <span class="summary-value">${this.config.items.map(u=>u.name).join(", ")}</span>
+            <span class="summary-label">${n.itemDescription==="items"?"Items":n.itemDescription.charAt(0).toUpperCase()+n.itemDescription.slice(1)}</span>
+            <span class="summary-value">${this.config.items.map(s=>s.name).join(", ")}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Period</span>
-            <span class="summary-value">${l===1?"1 year":l+" years"}</span>
+            <span class="summary-value">${d===1?"1 year":d+" years"}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Amount</span>
@@ -306,16 +424,15 @@ var S=`<div class="payment-form-container">
           </div>
           <div class="summary-item">
             <span class="summary-label">Payment Intent</span>
-            <span class="summary-value">${r}</span>
+            <span class="summary-value">${a}</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">Transaction</span>
             <span class="summary-value">${o}</span>
           </div>
         </div>
-        <p>We\u2019ll email you next steps and credentials. You can now close this window.</p>
-        <button type="button" class="btn-primary" id="close-payment-form">Close</button>
-      `;let s=this.getElement("#close-payment-form");s&&s.addEventListener("click",()=>this.closeForm())}let p=this.orderTotals?.total||0,g=this.formData?.order?.discountCode||"";this.trackEvent("purchase",{transaction_id:o,value:p,currency:this.config.currency,coupon:g||void 0,items:this.config.items.map(s=>({item_id:s.name,item_name:s.type+" "+s.action,price:s.unitPrice*s.years,quantity:1}))})}closeForm(){let e=this.root.host;if(e&&typeof e.remove=="function"){this.trackEvent("payment_form_closed",{domain:this.config.domain,currency:this.config.currency}),e.remove();return}let t=this.getElement(".payment-form-container");t&&(this.trackEvent("payment_form_closed",{domain:this.config.domain,currency:this.config.currency}),t.style.display="none")}};var M=`:host {
+        ${this.config.postCheckout?'<button type="button" class="btn-primary" id="continue-post-checkout">Continue</button>':`<p>We'll email you next steps and credentials. You can now close this window.</p><button type="button" class="btn-primary" id="close-payment-form">Close</button>`}
+      `,this.config.postCheckout){let s=this.getElement("#continue-post-checkout");s&&s.addEventListener("click",()=>this.nextStep())}else{let s=this.getElement("#close-payment-form");s&&s.addEventListener("click",()=>this.closeForm())}let m=this.orderTotals?.total||0,h=this.formData?.order?.discountCode||"";this.trackEvent("purchase",{transaction_id:o,value:m,currency:this.config.currency,coupon:h||void 0,items:this.config.items.map(s=>({item_id:s.name,item_name:s.type+" "+s.action,price:s.unitPrice*s.years,quantity:1}))})}closeForm(){let e=this.root.host;if(e&&typeof e.remove=="function"){this.trackEvent("payment_form_closed",{domain:this.config.domain,currency:this.config.currency}),e.remove();return}let t=this.getElement(".payment-form-container");t&&(this.trackEvent("payment_form_closed",{domain:this.config.domain,currency:this.config.currency}),t.style.display="none")}renderNextSteps(){let e=this.getElement("#next-steps-content");e&&(e.innerHTML=M(this.config.items))}renderIntent(){let e=this.getElement("#intent-content");e&&(e.innerHTML=A())}renderUpsell(){let e=this.getElement("#upsell-content");if(!e)return;let t=T(this.config.items);this.upsellOffers=t,e.innerHTML=I(t,this.currencySymbol),e.querySelectorAll(".upsell-add-btn").forEach(a=>{a.addEventListener("click",n=>{let r=parseInt(n.target.dataset.index),i=this.upsellOffers[r];if(!i)return;let o=this.root.host;o&&o.dispatchEvent(new CustomEvent("upsell-selected",{bubbles:!0,detail:i})),n.target.textContent="Added",n.target.disabled=!0,this.trackEvent("upsell_selected",{item_name:i.name,item_type:i.type,discount_percent:i.discountPercent,price:i.discountPrice})})}),this.trackEvent("upsell_viewed",{offers_count:t.length,offer_names:t.map(a=>a.name).join(", ")})}handleIntentSubmit(){let e=this.root.querySelector('input[name="intent-purpose"]:checked'),t=this.root.querySelector('input[name="intent-technical"]:checked'),a={purpose:e?e.value:null,technical:t?t.value:null},n=this.root.host;n&&n.dispatchEvent(new CustomEvent("intent-submitted",{bubbles:!0,detail:a})),this.trackEvent("intent_submitted",a),this.nextStep()}};var N=`:host {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, sans-serif;
   line-height: 1.5;
@@ -1008,6 +1125,247 @@ button:focus {
   }
 }
 
+/* Post-checkout styles */
+.post-checkout-content {
+  text-align: center;
+}
+
+.post-checkout-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.post-checkout-content p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.post-checkout-icon {
+  width: 4rem;
+  height: 4rem;
+  background-color: var(--success-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: white;
+  font-size: 2rem;
+}
+
+/* Next steps cards */
+.next-step-card {
+  text-align: left;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.next-step-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.next-step-item-name {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.next-step-list {
+  padding-left: 1.25rem;
+  margin: 0;
+}
+
+.next-step-list li {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  padding: 0.25rem 0;
+  line-height: 1.4;
+}
+
+/* Intent question styles */
+.intent-section {
+  text-align: center;
+}
+
+.intent-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.intent-section p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.intent-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.intent-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.intent-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.intent-option {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+  margin-bottom: 0;
+  font-weight: 400;
+}
+
+.intent-option:hover {
+  border-color: var(--button-primary);
+  background-color: var(--bg-secondary);
+}
+
+.intent-option input[type="radio"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.intent-option-text {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+/* Upsell card styles */
+.upsell-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.upsell-card {
+  text-align: left;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.upsell-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.upsell-type-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  color: white;
+}
+
+.upsell-type-domain {
+  background-color: #0d6efd;
+}
+
+.upsell-type-email {
+  background-color: #6f42c1;
+}
+
+.upsell-type-hosting {
+  background-color: #198754;
+}
+
+.upsell-discount-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.upsell-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  word-break: break-all;
+}
+
+.upsell-description {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  flex: 1;
+}
+
+.upsell-pricing {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.upsell-original-price {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+.upsell-discount-price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--success-color);
+}
+
+.upsell-period {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.upsell-add-btn {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.upsell-empty {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+@media (max-width: 500px) {
+  .upsell-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .loading-spinner {
   border: 3px solid var(--border-color);
   border-top: 3px solid var(--button-primary);
@@ -1040,4 +1398,4 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
-`;var A=document.createElement("template");A.innerHTML=S;var v=class extends HTMLElement{constructor(){super(),this.paymentForm=null,this.isInitialized=!1,this.shadow=this.attachShadow({mode:"open"})}set items(e){this._items=Array.isArray(e)?e:void 0,this.isInitialized&&this.paymentForm&&this.render()}get items(){return this._items}connectedCallback(){this.isInitialized||(this.render(),this.isInitialized=!0)}render(){this.shadow.innerHTML="";let e=this.readOptionsFromAttributes(),t=typeof e.domain=="string"&&e.domain.trim().length>0,r=typeof e.currency=="string"&&e.currency.trim().length>0;if(!t||!r){console.warn("[PaymentFormElement] Missing required attributes: domain and currency. Not initializing form.");return}let a=document.createElement("style");a.textContent=M;let n=A.content.cloneNode(!0);this.shadow.appendChild(a),this.shadow.appendChild(n),this.paymentForm=new f(this.shadow,e)}readOptionsFromAttributes(){let e=m=>this.getAttribute(m),t=m=>this.getAttribute(`data-${m}`),r=t("domain")||e("domain")||void 0,a=t("currency")||e("currency")||void 0,n=t("theme")||e("theme")||void 0,i=typeof r=="string"?r.trim():void 0,o=typeof a=="string"?a.trim().toUpperCase():void 0,l={name:t("name")||e("name")||void 0,email:t("email")||e("email")||void 0,phone:t("phone")||e("phone")||void 0},d=e("base-price")?Number(e("base-price")):void 0,p=e("taxes-rate")?Number(e("taxes-rate")):void 0,g=e("fee-amount")?Number(e("fee-amount")):void 0,s=t("payment-style")||e("payment-style")||void 0,u=t("transaction-type")||e("transaction-type")||void 0,x;if(typeof s=="string"){let m=s.trim().toLowerCase();(m==="inline"||m==="external")&&(x=m)}let h;if(typeof u=="string"){let m=u.trim().toLowerCase();(m==="registration"||m==="renewal"||m==="transfer")&&(h=m)}let b,w=t("items")||e("items");if(w)try{b=JSON.parse(w)}catch{console.warn("[PaymentFormElement] Invalid JSON in items attribute.")}this._items&&(b=this._items);let L=t("checkout-api")||e("checkout-api")||void 0,y;if(typeof n=="string"){let m=n.trim().toLowerCase();m==="light"||m==="dark"?y=m:(m==="system"||m==="system-default")&&(y="system")}let I=C({items:b,domain:i,basePrice:d,taxesRate:p,feeAmount:g,transactionType:h});return{domain:i,currency:o,customer:l,basePrice:d,taxesRate:p,feeAmount:g,theme:y,items:I,paymentStyle:x,transactionType:h,checkoutApi:L}}completePayment(e){this.paymentForm&&this.paymentForm.completePayment(e)}};customElements.get("payment-form")||customElements.define("payment-form",v);export{v as PaymentFormElement};
+`;var z=document.createElement("template");z.innerHTML=S;var x=class extends HTMLElement{constructor(){super(),this.paymentForm=null,this.isInitialized=!1,this.shadow=this.attachShadow({mode:"open"})}set items(e){this._items=Array.isArray(e)?e:void 0,this.isInitialized&&this.paymentForm&&this.render()}get items(){return this._items}connectedCallback(){this.isInitialized||(this.render(),this.isInitialized=!0)}render(){this.shadow.innerHTML="";let e=this.readOptionsFromAttributes(),t=typeof e.domain=="string"&&e.domain.trim().length>0,a=typeof e.currency=="string"&&e.currency.trim().length>0;if(!t||!a){console.warn("[PaymentFormElement] Missing required attributes: domain and currency. Not initializing form.");return}let n=document.createElement("style");n.textContent=N;let r=z.content.cloneNode(!0);this.shadow.appendChild(n),this.shadow.appendChild(r),this.paymentForm=new b(this.shadow,e)}readOptionsFromAttributes(){let e=p=>this.getAttribute(p),t=p=>this.getAttribute(`data-${p}`),a=t("domain")||e("domain")||void 0,n=t("currency")||e("currency")||void 0,r=t("theme")||e("theme")||void 0,i=typeof a=="string"?a.trim():void 0,o=typeof n=="string"?n.trim().toUpperCase():void 0,d={name:t("name")||e("name")||void 0,email:t("email")||e("email")||void 0,phone:t("phone")||e("phone")||void 0},l=e("base-price")?Number(e("base-price")):void 0,m=e("taxes-rate")?Number(e("taxes-rate")):void 0,h=e("fee-amount")?Number(e("fee-amount")):void 0,s=t("payment-style")||e("payment-style")||void 0,u=t("transaction-type")||e("transaction-type")||void 0,g;if(typeof s=="string"){let p=s.trim().toLowerCase();(p==="inline"||p==="external")&&(g=p)}let f;if(typeof u=="string"){let p=u.trim().toLowerCase();(p==="registration"||p==="renewal"||p==="transfer")&&(f=p)}let y,w=t("items")||e("items");if(w)try{y=JSON.parse(w)}catch{console.warn("[PaymentFormElement] Invalid JSON in items attribute.")}this._items&&(y=this._items);let D=t("checkout-api")||e("checkout-api")||void 0,R=this.hasAttribute("post-checkout")||this.hasAttribute("data-post-checkout"),v;if(typeof r=="string"){let p=r.trim().toLowerCase();p==="light"||p==="dark"?v=p:(p==="system"||p==="system-default")&&(v="system")}let $=E({items:y,domain:i,basePrice:l,taxesRate:m,feeAmount:h,transactionType:f});return{domain:i,currency:o,customer:d,basePrice:l,taxesRate:m,feeAmount:h,theme:v,items:$,paymentStyle:g,transactionType:f,checkoutApi:D,postCheckout:R}}completePayment(e){this.paymentForm&&this.paymentForm.completePayment(e)}};customElements.get("payment-form")||customElements.define("payment-form",x);export{x as PaymentFormElement};

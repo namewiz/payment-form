@@ -1,5 +1,6 @@
 import { countries } from './countries.js'
 import { computeCartTotals, renderCartHTML, renderCartTotalsHTML } from './cart.js'
+import { getNextSteps, renderIntentQuestion, getUpsellOffers, renderUpsellCards } from './post-checkout.js'
 
 export class PaymentForm {
   constructor (rootElement = document, options = {}) {
@@ -18,6 +19,7 @@ export class PaymentForm {
       paymentStyle: options.paymentStyle || 'inline',
       transactionType: options.transactionType || 'registration',
       checkoutApi: options.checkoutApi || undefined,
+      postCheckout: !!options.postCheckout,
       // theme: 'light' | 'dark' | 'system' (default)
       theme: (() => {
         const t = typeof options.theme === 'string' ? options.theme.trim().toLowerCase() : undefined
@@ -35,6 +37,11 @@ export class PaymentForm {
       this.pipeline = ['cart', 'customer', 'redirect', 'processing']
     } else {
       this.pipeline = ['cart', 'customer', 'payment', 'processing']
+    }
+
+    // Append post-checkout steps if enabled
+    if (this.config.postCheckout) {
+      this.pipeline.push('next-steps', 'intent', 'upsell')
     }
 
     this.currencySymbol = this.getCurrencySymbol(this.config.currency)
@@ -90,6 +97,22 @@ export class PaymentForm {
 
     const redirectPayBtn = this.getElement('#redirect-pay-btn')
     if (redirectPayBtn) redirectPayBtn.addEventListener('click', () => this.handleRedirect())
+
+    // Post-checkout step buttons
+    const nextStepsBtn = this.getElement('#next-step-nextsteps')
+    if (nextStepsBtn) nextStepsBtn.addEventListener('click', () => this.nextStep())
+
+    const skipIntent = this.getElement('#skip-intent')
+    if (skipIntent) skipIntent.addEventListener('click', () => this.nextStep())
+
+    const submitIntent = this.getElement('#submit-intent')
+    if (submitIntent) submitIntent.addEventListener('click', () => this.handleIntentSubmit())
+
+    const skipUpsell = this.getElement('#skip-upsell')
+    if (skipUpsell) skipUpsell.addEventListener('click', () => this.closeForm())
+
+    const doneUpsell = this.getElement('#done-upsell')
+    if (doneUpsell) doneUpsell.addEventListener('click', () => this.closeForm())
 
     const formEl = this.getElement('#payment-form')
     if (formEl) formEl.addEventListener('submit', (e) => this.handleSubmit(e))
@@ -384,11 +407,18 @@ export class PaymentForm {
               <span class="summary-value">${txnId}</span>
             </div>
           </div>
-          <button type="button" class="btn-primary" id="close-payment-form">Close</button>`
+          ${this.config.postCheckout
+            ? '<button type="button" class="btn-primary" id="continue-post-checkout">Continue</button>'
+            : '<button type="button" class="btn-primary" id="close-payment-form">Close</button>'}`
       }
 
-      const closeBtn = this.getElement('#close-payment-form')
-      if (closeBtn) closeBtn.addEventListener('click', () => this.closeForm())
+      if (this.config.postCheckout) {
+        const continueBtn = this.getElement('#continue-post-checkout')
+        if (continueBtn) continueBtn.addEventListener('click', () => this.nextStep())
+      } else {
+        const closeBtn = this.getElement('#close-payment-form')
+        if (closeBtn) closeBtn.addEventListener('click', () => this.closeForm())
+      }
 
       this.goToStep('processing')
     }
@@ -705,6 +735,15 @@ export class PaymentForm {
       this.renderRedirectSummary()
     }
 
+    // Render post-checkout content when entering those steps
+    if (step === 'next-steps') {
+      this.renderNextSteps()
+    } else if (step === 'intent') {
+      this.renderIntent()
+    } else if (step === 'upsell') {
+      this.renderUpsell()
+    }
+
     // When payment/redirect step is shown, mark begin_checkout (GA4 recommendation)
     if (step === 'payment' || step === 'redirect') {
       const value = this.orderTotals?.total || 0
@@ -826,12 +865,18 @@ export class PaymentForm {
             <span class="summary-value">${txnId}</span>
           </div>
         </div>
-        <p>We’ll email you next steps and credentials. You can now close this window.</p>
-        <button type="button" class="btn-primary" id="close-payment-form">Close</button>
+        ${this.config.postCheckout
+          ? '<button type="button" class="btn-primary" id="continue-post-checkout">Continue</button>'
+          : '<p>We\'ll email you next steps and credentials. You can now close this window.</p><button type="button" class="btn-primary" id="close-payment-form">Close</button>'}
       `
 
-      const closeBtn = this.getElement('#close-payment-form')
-      if (closeBtn) closeBtn.addEventListener('click', () => this.closeForm())
+      if (this.config.postCheckout) {
+        const continueBtn = this.getElement('#continue-post-checkout')
+        if (continueBtn) continueBtn.addEventListener('click', () => this.nextStep())
+      } else {
+        const closeBtn = this.getElement('#close-payment-form')
+        if (closeBtn) closeBtn.addEventListener('click', () => this.closeForm())
+      }
     }
 
     // Analytics: purchase (GA4 recommendation)
@@ -870,5 +915,82 @@ export class PaymentForm {
       })
       container.style.display = 'none'
     }
+  }
+
+  renderNextSteps() {
+    const container = this.getElement('#next-steps-content')
+    if (!container) return
+    container.innerHTML = getNextSteps(this.config.items)
+  }
+
+  renderIntent() {
+    const container = this.getElement('#intent-content')
+    if (!container) return
+    container.innerHTML = renderIntentQuestion()
+  }
+
+  renderUpsell() {
+    const container = this.getElement('#upsell-content')
+    if (!container) return
+
+    const offers = getUpsellOffers(this.config.items)
+    this.upsellOffers = offers
+    container.innerHTML = renderUpsellCards(offers, this.currencySymbol)
+
+    // Wire up add buttons
+    container.querySelectorAll('.upsell-add-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.index)
+        const offer = this.upsellOffers[index]
+        if (!offer) return
+
+        // Dispatch event for host page
+        const host = this.root.host
+        if (host) {
+          host.dispatchEvent(new CustomEvent('upsell-selected', {
+            bubbles: true,
+            detail: offer
+          }))
+        }
+
+        // Visual feedback
+        e.target.textContent = 'Added'
+        e.target.disabled = true
+
+        this.trackEvent('upsell_selected', {
+          item_name: offer.name,
+          item_type: offer.type,
+          discount_percent: offer.discountPercent,
+          price: offer.discountPrice
+        })
+      })
+    })
+
+    this.trackEvent('upsell_viewed', {
+      offers_count: offers.length,
+      offer_names: offers.map((o) => o.name).join(', ')
+    })
+  }
+
+  handleIntentSubmit() {
+    const purpose = this.root.querySelector('input[name="intent-purpose"]:checked')
+    const technical = this.root.querySelector('input[name="intent-technical"]:checked')
+
+    const intentData = {
+      purpose: purpose ? purpose.value : null,
+      technical: technical ? technical.value : null
+    }
+
+    // Dispatch event for host page
+    const host = this.root.host
+    if (host) {
+      host.dispatchEvent(new CustomEvent('intent-submitted', {
+        bubbles: true,
+        detail: intentData
+      }))
+    }
+
+    this.trackEvent('intent_submitted', intentData)
+    this.nextStep()
   }
 }
