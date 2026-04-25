@@ -4,7 +4,6 @@ import { computeCartTotals, renderCartHTML, renderCartTotalsHTML } from './cart.
 export class PaymentForm {
   constructor (rootElement = document, options = {}) {
     this.root = rootElement
-    this.pipeline = ['cart', 'customer', 'payment', 'processing']
     this.currentStep = 'cart'
     this.formData = {}
     this.config = {
@@ -18,6 +17,7 @@ export class PaymentForm {
       items: options.items || [],
       paymentStyle: options.paymentStyle || 'inline',
       transactionType: options.transactionType || 'registration',
+      checkoutApi: options.checkoutApi || undefined,
       // theme: 'light' | 'dark' | 'system' (default)
       theme: (() => {
         const t = typeof options.theme === 'string' ? options.theme.trim().toLowerCase() : undefined
@@ -28,6 +28,13 @@ export class PaymentForm {
     // If required config is missing, do not render the form UI
     if (!this.config.domain || !this.config.currency) {
       throw new Error('PaymentForm: domain and currency are required configuration options')
+    }
+
+    // Set pipeline based on payment style
+    if (this.config.paymentStyle === 'external') {
+      this.pipeline = ['cart', 'customer', 'redirect', 'processing']
+    } else {
+      this.pipeline = ['cart', 'customer', 'payment', 'processing']
     }
 
     this.currencySymbol = this.getCurrencySymbol(this.config.currency)
@@ -77,6 +84,12 @@ export class PaymentForm {
 
     const prevPayment = this.getElement('#prev-step-payment')
     if (prevPayment) prevPayment.addEventListener('click', () => this.prevStep())
+
+    const prevRedirect = this.getElement('#prev-step-redirect')
+    if (prevRedirect) prevRedirect.addEventListener('click', () => this.prevStep())
+
+    const redirectPayBtn = this.getElement('#redirect-pay-btn')
+    if (redirectPayBtn) redirectPayBtn.addEventListener('click', () => this.handleRedirect())
 
     const formEl = this.getElement('#payment-form')
     if (formEl) formEl.addEventListener('submit', (e) => this.handleSubmit(e))
@@ -258,6 +271,127 @@ export class PaymentForm {
 
     const processingHeading = this.getElement('#processing-heading')
     if (processingHeading) processingHeading.textContent = wording.processing
+  }
+
+  renderRedirectSummary() {
+    const container = this.getElement('#redirect-summary')
+    if (!container) return
+
+    const fmt = (n) => `${this.currencySymbol}${n.toFixed(2)}`
+    const itemsList = this.config.items
+      .map((item) => `<div class="summary-item"><span class="summary-label">${item.name}</span><span class="summary-value">${fmt(item.unitPrice * item.years)}</span></div>`)
+      .join('')
+
+    container.innerHTML = `
+      ${itemsList}
+      <div class="summary-item" style="border-top: 1px solid var(--border-color); margin-top: 0.25rem; padding-top: 0.5rem; font-weight: 600;">
+        <span class="summary-label">Total</span>
+        <span class="summary-value">${fmt(this.orderTotals.total)}</span>
+      </div>`
+  }
+
+  async handleRedirect() {
+    this.collectFormData()
+
+    const btn = this.getElement('#redirect-pay-btn')
+    const btnText = this.getElement('#redirect-pay-text')
+    if (btn) { btn.disabled = true; btn.classList.add('loading') }
+    if (btnText) btnText.textContent = 'Redirecting...'
+
+    if (!this.config.checkoutApi) {
+      // No API endpoint — fire event as fallback
+      const host = this.root.host
+      if (host) {
+        host.dispatchEvent(new CustomEvent('payment-redirect', {
+          bubbles: true,
+          detail: this.formData
+        }))
+      }
+      return
+    }
+
+    // Call checkout API to get redirect URL
+    try {
+      const payload = {
+        product: {
+          domainName: this.config.domain,
+          domainTransaction: this.config.items[0]?.action === 'transfer' ? 'transfer' : 'create',
+          addons: {},
+          nameservers: []
+        },
+        customer: {
+          email: this.formData.userInfo?.email || '',
+          firstName: (this.formData.userInfo?.fullName || '').split(' ')[0] || '',
+          lastName: (this.formData.userInfo?.fullName || '').split(' ').slice(1).join(' ') || '',
+          phone: this.formData.userInfo?.phone || '',
+          address: {
+            street: this.formData.userInfo?.address?.line1 || '',
+            city: '',
+            zipcode: this.formData.userInfo?.address?.zip || '',
+            country: this.formData.userInfo?.address?.country || '',
+            state: this.formData.userInfo?.address?.state || ''
+          }
+        },
+        currency: this.config.currency,
+        discounts: this.formData.order?.discountCode ? [{ code: this.formData.order.discountCode }] : []
+      }
+
+      const response = await fetch(this.config.checkoutApi, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      if (!response.ok) throw new Error('Payment API returned ' + response.status)
+
+      const data = await response.json()
+
+      if (data.authorizationUrl) {
+        window.location.href = data.authorizationUrl
+      } else {
+        throw new Error('No redirect URL returned from payment API')
+      }
+    } catch (err) {
+      // Show error, re-enable button
+      if (btn) { btn.disabled = false; btn.classList.remove('loading') }
+      if (btnText) btnText.textContent = 'Proceed to Payment'
+      const container = this.getElement('#redirect-summary')
+      if (container) {
+        container.insertAdjacentHTML('beforeend',
+          `<p class="redirect-error">Something went wrong. Please try again.</p>`)
+      }
+    }
+  }
+
+  completePayment(result) {
+    if (result && result.success) {
+      const wording = this.getWording()
+      const txnId = result.transactionId || ''
+      const years = this.config.items.length > 0 ? this.config.items[0].years : 1
+      const statusContainer = this.getElement('#status-content')
+      if (statusContainer) {
+        statusContainer.innerHTML = `
+          <div class="confirmation-icon" aria-hidden="true">✓</div>
+          <h2>${wording.successHeading}</h2>
+          <p>${wording.successMessage}</p>
+          <div class="summary-section">
+            <div class="summary-item">
+              <span class="summary-label">${wording.itemDescription === 'items' ? 'Items' : wording.itemDescription.charAt(0).toUpperCase() + wording.itemDescription.slice(1)}</span>
+              <span class="summary-value">${this.config.items.map((i) => i.name).join(', ')}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Transaction</span>
+              <span class="summary-value">${txnId}</span>
+            </div>
+          </div>
+          <button type="button" class="btn-primary" id="close-payment-form">Close</button>`
+      }
+
+      const closeBtn = this.getElement('#close-payment-form')
+      if (closeBtn) closeBtn.addEventListener('click', () => this.closeForm())
+
+      this.goToStep('processing')
+    }
   }
 
   setupCardFormatting() {
@@ -566,8 +700,13 @@ export class PaymentForm {
       currency: this.config.currency
     })
 
-    // When payment step is shown, mark begin_checkout (GA4 recommendation)
-    if (step === 'payment') {
+    // Render redirect summary when entering redirect step
+    if (step === 'redirect') {
+      this.renderRedirectSummary()
+    }
+
+    // When payment/redirect step is shown, mark begin_checkout (GA4 recommendation)
+    if (step === 'payment' || step === 'redirect') {
       const value = this.orderTotals?.total || 0
       this.trackEvent('begin_checkout', {
         value,

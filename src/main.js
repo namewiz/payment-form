@@ -115,6 +115,9 @@ export class PaymentFormElement extends HTMLElement {
       items = this._items
     }
 
+    // Checkout API endpoint for external payment
+    const checkoutApi = dataAttr('checkout-api') || attr('checkout-api') || undefined
+
     let theme
     if (typeof themeRaw === 'string') {
       const t = themeRaw.trim().toLowerCase()
@@ -125,7 +128,13 @@ export class PaymentFormElement extends HTMLElement {
     // Normalize into items array (backward compat)
     const normalizedItems = normalizeItems({ items, domain, basePrice, taxesRate, feeAmount, transactionType })
 
-    return { domain, currency, customer, basePrice, taxesRate, feeAmount, theme, items: normalizedItems, paymentStyle, transactionType }
+    return { domain, currency, customer, basePrice, taxesRate, feeAmount, theme, items: normalizedItems, paymentStyle, transactionType, checkoutApi }
+  }
+
+  completePayment(result) {
+    if (this.paymentForm) {
+      this.paymentForm.completePayment(result)
+    }
   }
 
 }

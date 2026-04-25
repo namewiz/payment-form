@@ -480,6 +480,41 @@ button:focus {
   font-size: 0.875rem;
 }
 
+/* Redirect step styles */
+.redirect-section {
+  text-align: center;
+}
+
+.redirect-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.redirect-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.redirect-section p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.redirect-section .summary-section {
+  text-align: left;
+}
+
+.redirect-section .form-actions {
+  justify-content: center;
+}
+
+.redirect-error {
+  color: var(--error-color);
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
+}
+
 /* Cart styles */
 .cart-section {
   margin-bottom: 1.5rem;
