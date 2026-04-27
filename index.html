@@ -81,6 +81,15 @@
       </div>
 
       <div>
+        <label for="cfg-items" class="block text-sm font-medium mb-1">Cart Items (JSON array)</label>
+        <textarea id="cfg-items" name="items" rows="5"
+          placeholder='[{"type":"domain","name":"example.ng","unitPrice":12,"taxRate":0.075,"feeAmount":1.5,"years":1}]'
+          class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        <p id="cfg-items-error" class="hidden mt-1 text-sm text-red-600">Invalid JSON. Please provide a valid array of items.</p>
+        <p class="mt-1 text-xs text-gray-500">Leave empty to use legacy single-domain mode. Fields: type (domain/email/hosting), name, unitPrice, taxRate, feeAmount, years</p>
+      </div>
+
+      <div>
         <label for="cfg-customer" class="block text-sm font-medium mb-1">Customer Info (JSON)</label>
         <textarea id="cfg-customer" name="customer" rows="4"
           placeholder='{"name":"John Doe","email":"john@example.com","phone":"+1 555 123 4567"}'
@@ -116,6 +125,25 @@
           const currency = (form.currency.value || 'USD').toUpperCase()
           const themeSel = form.theme.value || 'system-default'
 
+          // Parse items JSON
+          let items = null
+          const itemsErr = document.getElementById('cfg-items-error')
+          itemsErr.classList.add('hidden')
+          const itemsRaw = form.items.value.trim()
+          if (itemsRaw) {
+            try {
+              const parsed = JSON.parse(itemsRaw)
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                items = parsed
+              } else {
+                throw new Error('Not an array')
+              }
+            } catch (ex) {
+              itemsErr.classList.remove('hidden')
+              return
+            }
+          }
+
           // Parse customer JSON
           let customer = {}
           const err = document.getElementById('cfg-customer-error')
@@ -138,6 +166,7 @@
           const replacement = document.createElement('payment-form')
           replacement.setAttribute('domain', domain)
           replacement.setAttribute('currency', currency)
+          if (items) replacement.setAttribute('items', JSON.stringify(items))
           if (customer.name) replacement.setAttribute('name', customer.name)
           if (customer.email) replacement.setAttribute('email', customer.email)
           if (customer.phone) replacement.setAttribute('phone', customer.phone)
@@ -167,6 +196,7 @@
             form.currency.value = 'USD'
             form.theme.value = 'system-default'
             document.getElementById('cfg-customer-error').classList.add('hidden')
+            document.getElementById('cfg-items-error').classList.add('hidden')
           })
         })
       })()
